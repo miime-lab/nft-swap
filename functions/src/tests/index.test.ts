@@ -37,6 +37,8 @@ test("Create Single AssetData.", () => {
   const tokenData = orderBaseInfo.makerTokenData[0];
   const encodedData = createSingleAssetData(tokenData);
   const decodedData = assetDataUtils.decodeERC721AssetData(encodedData);
+  console.log("decoded Data:",decodedData)
+  console.log("type of decoded Data:", typeof decodedData)
   expect(decodedData.tokenAddress).toBe(tokenData.contractAddress);
   //why decodedData.tokenId is not bignumber??
   expect(decodedData.tokenId.toString()).toBe(tokenData.tokenId.toString());
