@@ -1,0 +1,23 @@
+{
+  "name": "ts_playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "start": "lite-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@0x/order-utils": "^9.0.0"
+  },
+  "dependencies": {
+    "@types/jest": "^25.1.4",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.1",
+    "tslint": "^6.0.0",
+    "typescript": "^3.8.3",
+    "web3": "^1.2.6"
+  }
+}
