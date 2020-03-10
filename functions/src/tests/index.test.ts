@@ -46,6 +46,7 @@ test("Create Single AssetData.", () => {
 
 test("Create OrderJson", () => {
   const orderJson = createOrderJson(orderBaseInfo);
+  console.log(orderJson)
   expect(orderJson.makerAddress).toBe(orderBaseInfo.makerAddress);
   const decodedAssetsData = assetDataUtils.decodeMultiAssetData(
     orderJson.makerAssetData
