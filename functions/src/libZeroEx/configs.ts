@@ -1,4 +1,3 @@
-import { GANACHE_NETWORK_ID, KOVAN_NETWORK_ID, RINKEBY_NETWORK_ID, ROPSTEN_NETWORK_ID } from './constants';
 interface NetworkSpecificConfigs {
     rpcUrl: string;
     networkId: number;
@@ -10,22 +9,22 @@ export const MNEMONIC = 'concert load couple harbor equip island argue ramp clar
 export const BASE_DERIVATION_PATH = `44'/60'/0'/0`;
 export const GANACHE_CONFIGS: NetworkSpecificConfigs = {
     rpcUrl: 'http://127.0.0.1:8545',
-    networkId: GANACHE_NETWORK_ID,
+    networkId: 50,
     chainId: 1337,
 };
 export const KOVAN_CONFIGS: NetworkSpecificConfigs = {
     rpcUrl: 'https://kovan.infura.io/',
-    networkId: KOVAN_NETWORK_ID,
-    chainId: KOVAN_NETWORK_ID,
+    networkId: 42,
+    chainId: 42,
 };
 export const ROPSTEN_CONFIGS: NetworkSpecificConfigs = {
     rpcUrl: 'https://ropsten.infura.io/',
-    networkId: ROPSTEN_NETWORK_ID,
-    chainId: ROPSTEN_NETWORK_ID,
+    networkId: 3,
+    chainId: 3,
 };
 export const RINKEBY_CONFIGS: NetworkSpecificConfigs = {
     rpcUrl: 'https://rinkeby.infura.io/',
-    networkId: RINKEBY_NETWORK_ID,
-    chainId: RINKEBY_NETWORK_ID,
+    networkId: 4,
+    chainId: 4,
 };
 export const NETWORK_CONFIGS = GANACHE_CONFIGS; // or KOVAN_CONFIGS or ROPSTEN_CONFIGS or RINKEBY_CONFIGS

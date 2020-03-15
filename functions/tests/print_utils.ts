@@ -12,7 +12,7 @@ import { DecodedLogArgs, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs }
 import * as _ from 'lodash';
 import ora = require('ora');
 
-import { DECIMALS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from '../constants';
+import { DECIMALS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from './constants';
 
 // tslint:disable-next-line:no-var-requires
 const Table = require('cli-table');

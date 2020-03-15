@@ -1,4 +1,4 @@
-import { OpenseaClient } from "../openseaClient";
+import { OpenseaClient } from "../src/openseaClient";
 const testUrl = "https://opensea.io/assets/0xdceaf1652a131f32a821468dc03a92df0edd86ea/30450324"
 const openseaClient = new OpenseaClient();
 
