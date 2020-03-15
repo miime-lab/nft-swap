@@ -18,6 +18,10 @@ module.exports = {
     'vue'
   ],
   // add your custom rules here
-  rules: {},
+  rules: {
+    "indent": [
+      2
+    ]
+  },
   globals: {}
 }
