@@ -1,7 +1,7 @@
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { GANACHE_CONFIGS, KOVAN_CONFIGS, NETWORK_CONFIGS, RINKEBY_CONFIGS } from '../src/libZeroEx/configs';
+import { GANACHE_CONFIGS, KOVAN_CONFIGS, NETWORK_CONFIGS, RINKEBY_CONFIGS } from '../../../src/plugins/libZeroEx/configs';
 import { ROPSTEN_NETWORK_ID } from './constants';
-import { providerEngine } from '../src/libZeroEx/provider_engine';
+import { providerEngine } from '../../../src/plugins/libZeroEx/provider_engine';
 
 const ERC721_TOKENS_BY_CHAIN_ID: { [chainId: number]: string[] } = {
     [RINKEBY_CONFIGS.chainId]: ['0xffce3807ac47060e900ce3fb9cdad3597c25425d'],

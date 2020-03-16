@@ -219,60 +219,60 @@
 import opensea from '../plugins/opensea'
 
 export default {
-  name: 'New',
-  data: () => ({
-    sendingAssets: [
-      { id: 0, url: '', image: null }
-    ],
-    receivingAssets: [
-      { id: 0, url: '', image: null }
-    ],
-    dialog: false
-  }),
-  methods: {
-    loadAssetInfoFromUrl (dataName, id) {
-      const asset = this[dataName][id]
-      if (!asset.url) {
-        return true
-      }
-      try {
-        const [url, contractAddress, tokenId] = asset.url.match(/.*\/(.*)\/(.*)$/)
-        console.log(url, contractAddress, tokenId)
-        if (this.isAlreadyAddedAsset(dataName, url, id)) {
-          asset.errorMessages = 'The asset is already input.'
-          return false
-        }
-        asset.errorMessages = ''
-        asset.loading = 'cyan lighten-2'
-        opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
-          console.log('assetInfo', assetInfo)
-          // sendingAsset.image = asset.image_preview_url
-          asset.image = assetInfo.image_url
-          asset.name = assetInfo.name
-          asset.ownerAddress = assetInfo.owner.address
-          asset.contractName = assetInfo.asset_contract.name
-          asset.contractAddress = assetInfo.asset_contract.address
-          asset.tokenId = assetInfo.token_id
-          asset.loading = false
-        })
-      } catch (e) {
-        asset.errorMessages = !this.sendUrl ? 'Please input OpenSea or miime URL' : 'Invalid url'
-      }
-      return true
-    },
-    isAlreadyAddedAsset (dataName, url, selfId) {
-      if (dataName === 'sendingAssets') {
-        return this.sendingAssets.find(asset => asset.url === url && asset.id !== selfId) ||
+    name: 'New',
+    data: () => ({
+        sendingAssets: [
+            { id: 0, url: '', image: null }
+        ],
+        receivingAssets: [
+            { id: 0, url: '', image: null }
+        ],
+        dialog: false
+    }),
+    methods: {
+        loadAssetInfoFromUrl (dataName, id) {
+            const asset = this[dataName][id]
+            if (!asset.url) {
+                return true
+            }
+            try {
+                const [url, contractAddress, tokenId] = asset.url.match(/.*\/(.*)\/(.*)$/)
+                console.log(url, contractAddress, tokenId)
+                if (this.isAlreadyAddedAsset(dataName, url, id)) {
+                    asset.errorMessages = 'The asset is already input.'
+                    return false
+                }
+                asset.errorMessages = ''
+                asset.loading = 'cyan lighten-2'
+                opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
+                    console.log('assetInfo', assetInfo)
+                    // sendingAsset.image = asset.image_preview_url
+                    asset.image = assetInfo.image_url
+                    asset.name = assetInfo.name
+                    asset.ownerAddress = assetInfo.owner.address
+                    asset.contractName = assetInfo.asset_contract.name
+                    asset.contractAddress = assetInfo.asset_contract.address
+                    asset.tokenId = assetInfo.token_id
+                    asset.loading = false
+                })
+            } catch (e) {
+                asset.errorMessages = !this.sendUrl ? 'Please input OpenSea or miime URL' : 'Invalid url'
+            }
+            return true
+        },
+        isAlreadyAddedAsset (dataName, url, selfId) {
+            if (dataName === 'sendingAssets') {
+                return this.sendingAssets.find(asset => asset.url === url && asset.id !== selfId) ||
           this.receivingAssets.find(asset => asset.url === url)
-      } else {
-        return this.sendingAssets.find(asset => asset.url === url) ||
+            } else {
+                return this.sendingAssets.find(asset => asset.url === url) ||
           this.receivingAssets.find(asset => asset.url === url && asset.id !== selfId)
-      }
-    },
-    addAsset (dataName) {
-      const newId = this[dataName].length
-      this[dataName].push({ id: newId, url: '', image: '' })
+            }
+        },
+        addAsset (dataName) {
+            const newId = this[dataName].length
+            this[dataName].push({ id: newId, url: '', image: '' })
+        }
     }
-  }
 }
 </script>

@@ -1,8 +1,8 @@
 import { assetDataUtils, generatePseudoRandomSalt } from "@0x/order-utils";
 import { BigNumber } from "@0x/utils";
 import { Web3Wrapper } from "@0x/web3-wrapper";
-import libZeroEx from "../src/libZeroEx/libZeroEx";
-import { providerEngine } from "../src/libZeroEx/provider_engine";
+import libZeroEx from "../../../src/plugins/libZeroEx/libZeroEx";
+import { providerEngine } from "../../../src/plugins/libZeroEx/provider_engine";
 import { dummyERC721TokenContracts } from "./contracts";
 //Ganeche runner for testing
 import { runMigrationsOnceIfRequiredAsync } from "./utils";
