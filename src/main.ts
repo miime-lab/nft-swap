@@ -20,9 +20,9 @@ const messages = {
             button_fillOrder: "Fill Order",
             modal_makeOrder_title: "Make Order",
             modal_makeOrder_title_approve:
-        "Unlock all Trust Collectibles for trading!",
+                "Unlock all Trust Collectibles for trading!",
             modal_makeOrder_message:
-        "To approve miime to trade this token, you must first complete a free (plus gas) transaction. Keep this tab open! This only needs to be done once for all Trust Collectibles items.",
+                "To approve miime to trade this token, you must first complete a free (plus gas) transaction. Keep this tab open! This only needs to be done once for all Trust Collectibles items.",
             modal_makeOrder_approve: "Approve",
             modal_makeOrder_cancel: "Cancel"
         }
@@ -39,7 +39,7 @@ const messages = {
             modal_makeOrder_title: "オーダー作成",
             modal_makeOrder_title_approve: "取引許可",
             modal_makeOrder_message:
-        "このトークンの取引を行うには、最初に取引許可のトランザクションを完了する必要があります。これは、トークンのコントラクトごとに1回だけ実行する必要があります。",
+                "このトークンの取引を行うには、最初に取引許可のトランザクションを完了する必要があります。これは、トークンのコントラクトごとに1回だけ実行する必要があります。",
             modal_makeOrder_approve: "許可",
             modal_makeOrder_cancel: "キャンセル",
             button_fillOrder: "取引を実行"

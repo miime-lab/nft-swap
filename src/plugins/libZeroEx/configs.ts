@@ -27,4 +27,4 @@ export const RINKEBY_CONFIGS: NetworkSpecificConfigs = {
     networkId: 4,
     chainId: 4,
 };
-export const NETWORK_CONFIGS = GANACHE_CONFIGS; // or KOVAN_CONFIGS or ROPSTEN_CONFIGS or RINKEBY_CONFIGS
+export const NETWORK_CONFIGS = ROPSTEN_CONFIGS; // or KOVAN_CONFIGS or ROPSTEN_CONFIGS or RINKEBY_CONFIGS

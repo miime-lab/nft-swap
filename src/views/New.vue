@@ -159,6 +159,7 @@
               </v-btn>
             </v-fab-transition>
           </v-card>
+          {{ orderJson }}
         </v-item-group>
       </v-col>
     </v-row>
@@ -215,9 +216,10 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import opensea from '../plugins/opensea'
-
+import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
+import { providerEngine } from "../plugins/libZeroEx/provider_engine";
 export default {
     name: 'New',
     data: () => ({
@@ -227,8 +229,39 @@ export default {
         receivingAssets: [
             { id: 0, url: '', image: null }
         ],
-        dialog: false
+        dialog: false,
+        orderJson:{},
+        assets: {
+            maker: {
+                address: '0x0000000000000000000000000000000000000000',
+                tokensERC721: [
+                    {
+                        contractAddress: '0x0000000000000000000000000000000000000000',
+                        tokenId: "40150012"
+                    },
+                    {
+                        contractAddress: '0x0000000000000000000000000000000000000000',
+                        tokenId: "30230001"
+                    }
+                ],
+                tokenERC20: undefined
+            },
+            taker: {
+                address: '0x0000000000000000000000000000000000000000',
+                tokensERC721: [
+                    {
+                        contractAddress: '0x0000000000000000000000000000000000000000',
+                        tokenId: "30230001"
+                    }
+                ],
+                tokenERC20: undefined
+            },
+        }
     }),
+    created: async function (){
+        const libZeroEx = new LibZeroEx(providerEngine)
+        this.orderJson = await libZeroEx.createOrderJson(this.assets)
+    },
     methods: {
         loadAssetInfoFromUrl (dataName, id) {
             const asset = this[dataName][id]
@@ -273,6 +306,6 @@ export default {
             const newId = this[dataName].length
             this[dataName].push({ id: newId, url: '', image: '' })
         }
-    }
+    },
 }
 </script>
