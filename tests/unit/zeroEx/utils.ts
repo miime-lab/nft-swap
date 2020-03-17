@@ -2,8 +2,8 @@ import { runMigrationsOnceAsync } from '@0x/migrations';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 // tslint:disable-next-line:no-implicit-dependencies
 
-import { GANACHE_CONFIGS, NETWORK_CONFIGS, TX_DEFAULTS } from '../src/libZeroEx/configs';
-import { providerEngine } from '../src/libZeroEx/provider_engine';
+import { GANACHE_CONFIGS, NETWORK_CONFIGS, TX_DEFAULTS } from '../../../src/plugins/libZeroEx/configs';
+import { providerEngine } from '../../../src/plugins/libZeroEx/provider_engine';
 
 
 export const runMigrationsOnceIfRequiredAsync = async (): Promise<void> => {

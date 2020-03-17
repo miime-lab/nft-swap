@@ -57,16 +57,16 @@
 
 <script>
 export default {
-  name: 'Task',
-  data: () => ({
-    errorMessages: '',
-    orders: [
-      {}
-    ]
-  }),
-  methods: {
-    fillOrder () {
+    name: 'Task',
+    data: () => ({
+        errorMessages: '',
+        orders: [
+            {}
+        ]
+    }),
+    methods: {
+        fillOrder () {
+        }
     }
-  }
 }
 </script>
