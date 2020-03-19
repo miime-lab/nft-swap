@@ -148,7 +148,7 @@ beforeAll(async () => {
 
 test("Create Single AssetData.", async () => {
     const tokenData = orderBaseInfo.maker.tokensERC721[0];
-    const encodedData = LibZeroEx.createSingleAssetData(tokenData);
+    const encodedData = LibZeroEx.createSingleERC721AssetData(tokenData);
     const decodedData = assetDataUtils.decodeERC721AssetData(encodedData);
     expect(decodedData.tokenAddress).toBe(tokenData.contractAddress);
     //why decodedData.tokenId is not bignumber??
