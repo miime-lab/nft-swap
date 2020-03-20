@@ -3,8 +3,8 @@
     class="fill-height"
   >
     <v-row
-      align="start"
       justify="center"
+      class="ml-0"
     >
       <v-col
         cols="12"
@@ -17,7 +17,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-20 mb-0"
+            class="elevation-4 mt-2 mb-0"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -26,7 +26,7 @@
               dark
               flat
             >
-              <v-toolbar-title>{{ $t("message.card_title_sending") }}</v-toolbar-title>
+              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_sending") }}</v-toolbar-title>
             </v-toolbar>
 
             <v-img
@@ -78,12 +78,41 @@
               </v-btn>
             </v-fab-transition>
           </v-card>
+
+          <v-card
+            class="elevation-4 mt-8 mb-0"
+          >
+            <v-toolbar
+              color="cyan lighten-2"
+              height="38px"
+              dark
+              flat
+            >
+              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_sending_weth") }}</v-toolbar-title>
+            </v-toolbar>
+
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  ref="sendingCurrencies[0].amount"
+                  v-model="sendingCurrencies[0].amount"
+                  :rules="[isNumber]"
+                  suffix="WETH"
+                  :error-messages="sendingCurrencies[0].errorMessages"
+                  placeholder="0"
+                  name="amount"
+                  type="text"
+                  class="subtitle-1"
+                />
+              </v-form>
+            </v-card-text>
+          </v-card>
         </v-item-group>
 
         <div
           align="center"
           justify="center"
-          class="mt-4 mb-3"
+          class="mt-6 mb-5"
         >
           <img
             src="@/assets/swap-allow.png"
@@ -97,7 +126,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-20 mb-0"
+            class="elevation-4 mt-2 mb-0"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -106,7 +135,7 @@
               dark
               flat
             >
-              <v-toolbar-title>{{ $t("message.card_title_receiving") }}</v-toolbar-title>
+              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_receiving") }}</v-toolbar-title>
             </v-toolbar>
 
             <v-img
@@ -124,7 +153,6 @@
             >
               {{ asset.contractName }} #{{ asset.tokenId }}
             </v-card-subtitle>
-            <!-- <v-divider v-if="!!asset.image" /> -->
 
             <v-card-text
               v-if="!asset.image"
@@ -159,25 +187,57 @@
               </v-btn>
             </v-fab-transition>
           </v-card>
-          {{ orderJson }}
+
+          <v-card
+            class="elevation-4 mt-8 mb-0"
+          >
+            <v-toolbar
+              color="orange lighten-2"
+              height="38px"
+              dark
+              flat
+            >
+              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_receiving_weth") }}</v-toolbar-title>
+            </v-toolbar>
+
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  ref="receivingCurrencies[0].amount"
+                  v-model="receivingCurrencies[0].amount"
+                  :rules="[isNumber]"
+                  suffix="WETH"
+                  :error-messages="receivingCurrencies[0].errorMessages"
+                  placeholder="0"
+                  name="amount"
+                  type="text"
+                  class="subtitle-1"
+                />
+              </v-form>
+            </v-card-text>
+          </v-card>
+
+          <!-- {{ orderJson }} -->
         </v-item-group>
       </v-col>
     </v-row>
 
     <v-row
       justify="center"
+      class="ml-0"
     >
       <v-dialog
         v-model="dialog"
         persistent
-        max-width="290"
+        scrollable
+        max-width="500"
       >
         <template
           v-slot:activator="{ on }"
         >
           <v-btn
             color="cyan lighten-2"
-            class="ma-8 white--text"
+            class="ma-8 mr-4 ml-4 white--text subtitle-1"
             dark
             v-on="on"
           >
@@ -190,9 +250,78 @@
           >
             {{ $t("message.modal_makeOrder_title") }}
           </v-card-title>
+
           <v-card-text>
+
+            <div class="title mb-2">送付アイテム</div>
+
+            <v-card
+              class="mx-auto mb-1 cyan lighten-5"
+              max-width="450"
+              flat
+              light
+            >
+              <v-card-text class="subtitle-1">所有者アドレス
+                <span class="body-1 ml-1">0x98d562c7A4781e3e6c0d16F67469b0A3b0CB25C7</span>
+              </v-card-text>
+            </v-card>
+
+            <v-card
+              class="mx-auto mb-1"
+              max-width="450"
+              outlined
+            >
+              <v-list-item three-line>
+                <v-list-item-content>
+                  <v-list-item-title class="title">MCH Extension: #10600301 Lv.54</v-list-item-title>
+                  <v-list-item-subtitle>MyCryptoHeroes:Extension #20600077</v-list-item-subtitle>
+                </v-list-item-content>
+
+                <v-list-item-avatar
+                  tile
+                  size="80"
+                  color="grey"
+                ></v-list-item-avatar>
+              </v-list-item>
+
+              <v-card-actions>
+                <v-btn text v-if="false">Button</v-btn>
+              </v-card-actions>
+            </v-card>
+
+            <v-card
+              class="mx-auto mb-1"
+              max-width="450"
+              outlined
+            >
+              <v-list-item three-line>
+                <v-list-item-content>
+                  <v-list-item-title class="title mb-2">0.1 WETH</v-list-item-title>
+                </v-list-item-content>
+
+                <v-list-item-avatar
+                  tile
+                  size="80"
+                  color="grey"
+                ></v-list-item-avatar>
+              </v-list-item>
+
+              <v-card-actions>
+                <v-btn text v-if="false">Button</v-btn>
+              </v-card-actions>
+            </v-card>
+
+            送付者のアドレス: 0x98d562c7A4781e3e6c0d16F67469b0A3b0CB25C7<br>
+            送付アイテム:<br>
+            <ul>
+              <li>MyCryptoHeroes:Extension #20600077</li>
+              <li>MyCryptoHeroes:Extension #20600111</li>
+            </ul>
+            
+            <v-spacer />
             {{ $t("message.modal_makeOrder_message") }}
           </v-card-text>
+
           <v-card-actions>
             <v-spacer />
             <v-btn
@@ -226,9 +355,16 @@ export default {
         sendingAssets: [
             { id: 0, url: '', image: null }
         ],
+        sendingCurrencies: [
+            { id: 0, constractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', amount: '' } // WETH
+        ],
         receivingAssets: [
             { id: 0, url: '', image: null }
         ],
+        receivingCurrencies: [
+            { id: 0, constractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', amount: '' } // WETH
+        ],
+        isNumber: value => !isNaN(value) || 'Please input a number',
         dialog: false,
         orderJson:{},
         assets: {
