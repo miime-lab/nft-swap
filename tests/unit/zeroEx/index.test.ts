@@ -166,6 +166,8 @@ test("Create OrderJson", async () => {
 test("Fill Order", async () => {
     await LibZeroEx.setApprovalForAll(dummyERC721TokenContract.address, maker);
     await LibZeroEx.setApprovalForAll(dummyERC721TokenContract.address, taker);
+    const a = await LibZeroEx.isApprovedForAll(dummyERC721TokenContract.address, maker)
+    expect(a).toBeTruthy()
     const orderJson = await LibZeroEx.createOrderJson(orderBaseInfo);
     const signedData = await LibZeroEx.sign(orderJson, maker);
     const txHash = await LibZeroEx.fillOrder(signedData, taker, takerAssetAmount);

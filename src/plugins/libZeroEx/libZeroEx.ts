@@ -3,7 +3,6 @@
 // ・tokensERC1155の追加（できれば）
 // ・createMultiAssetDataとcreateMixAssetDataはひとつにまとめたい（どちらもmultiAssetData） 
 // ・…とここまで書いて、createMixAssetDataって内部だけで使う関数ですかね。であれば、publicじゃないほうがいいかも
-// ・setApprovalForAll() があるなら、isApprovedForAll() と、ERC20用のsetApprove()とapprove()もほしい。あと、CryptoKittiesとかコンサヴァ用のsetApprove()とapprove()も
 
 import {
   assetDataUtils,
