@@ -148,7 +148,7 @@ beforeAll(async () => {
 
 test("Create Single AssetData.", async () => {
     const tokenData = orderBaseInfo.maker.tokensERC721[0];
-    const encodedData = LibZeroEx.createSingleAssetData(tokenData);
+    const encodedData = LibZeroEx.createSingleERC721AssetData(tokenData);
     const decodedData = assetDataUtils.decodeERC721AssetData(encodedData);
     expect(decodedData.tokenAddress).toBe(tokenData.contractAddress);
     //why decodedData.tokenId is not bignumber??
@@ -166,6 +166,8 @@ test("Create OrderJson", async () => {
 test("Fill Order", async () => {
     await LibZeroEx.setApprovalForAll(dummyERC721TokenContract.address, maker);
     await LibZeroEx.setApprovalForAll(dummyERC721TokenContract.address, taker);
+    const a = await LibZeroEx.isApprovedForAll(dummyERC721TokenContract.address, maker)
+    expect(a).toBeTruthy()
     const orderJson = await LibZeroEx.createOrderJson(orderBaseInfo);
     const signedData = await LibZeroEx.sign(orderJson, maker);
     const txHash = await LibZeroEx.fillOrder(signedData, taker, takerAssetAmount);
