@@ -216,7 +216,7 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import opensea from '../plugins/opensea'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { providerEngine } from "../plugins/libZeroEx/provider_engine";
