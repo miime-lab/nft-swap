@@ -218,6 +218,13 @@
 
 <script lang="js">
 import opensea from '../plugins/opensea'
+import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
+import {MetamaskSubprovider, Web3ProviderEngine, BigNumber} from '0x.js'
+const provider = new Web3ProviderEngine()
+const signer = new MetamaskSubprovider(window.web3.currentProvider)
+provider.addProvider(signer)
+provider.start()
+const libZeroEx = new LibZeroEx(window.web3.currentProvider)
 export default {
     name: 'New',
     data: () => ({
@@ -229,17 +236,18 @@ export default {
         ],
         dialog: false,
         orderJson:{},
+        myAddress:"",
         assets: {
             maker: {
-                address: '0x0000000000000000000000000000000000000000',
+                address: '0xc82F5fcbFAaf7CA1f6d0a969dB58A6BbA2958840',
                 tokensERC721: [
                     {
                         contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: "40150012"
+                        tokenId: BigNumber("40150012")
                     },
                     {
                         contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: "30230001"
+                        tokenId: BigNumber("40150011")
                     }
                 ],
                 tokenERC20: undefined
@@ -249,13 +257,19 @@ export default {
                 tokensERC721: [
                     {
                         contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: "30230001"
+                        tokenId: BigNumber("40150082")
                     }
                 ],
                 tokenERC20: undefined
             },
         }
     }),
+    created: async function() {
+        this.myAddress = window.web3.currentProvider.selectedAddress
+        await this.setApprovalForAll("0xdceaf1652a131f32a821468dc03a92df0edd86ea", this.myAddress)
+        const sign = await this.createAndSignOrderJson(this.assets)
+        console.log(11111,sign)
+    },
     methods: {
         loadAssetInfoFromUrl (dataName, id) {
             const asset = this[dataName][id]
@@ -299,6 +313,20 @@ export default {
         addAsset (dataName) {
             const newId = this[dataName].length
             this[dataName].push({ id: newId, url: '', image: '' })
+        },
+        async setApprovalForAll (tokenAddress, myAddress) {
+            console.log(tokenAddress)
+            console.log(await libZeroEx.isApprovedForAll(tokenAddress, myAddress))
+            if(!await libZeroEx.isApprovedForAll(tokenAddress, myAddress)){
+                console.log("setapproval")
+                libZeroEx.setApprovalForAll(tokenAddress, myAddress)
+            }
+        },
+        async createAndSignOrderJson(orderInfo) {
+            const orderJson = await libZeroEx.createOrderJson(orderInfo)
+            console.log(orderJson)
+            const sign = await libZeroEx.sign(orderJson, this.myAddress)
+            return sign
         }
     },
 }
