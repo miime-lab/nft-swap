@@ -218,6 +218,8 @@
 
 <script lang="js">
 import opensea from '../plugins/opensea'
+import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
+import { providerEngine } from "../plugins/libZeroEx/provider_engine";
 export default {
     name: 'New',
     data: () => ({
@@ -256,6 +258,10 @@ export default {
             },
         }
     }),
+    created: async function (){
+        const libZeroEx = new LibZeroEx(providerEngine)
+        this.orderJson = await libZeroEx.createOrderJson(this.assets)
+    },
     methods: {
         loadAssetInfoFromUrl (dataName, id) {
             const asset = this[dataName][id]

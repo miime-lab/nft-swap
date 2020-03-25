@@ -9,13 +9,15 @@ import {
   Order,
   generatePseudoRandomSalt,
   SignedOrder,
-  signatureUtils
-} from "@0x/order-utils";
-import { BigNumber } from "@0x/utils";
-import { Web3ProviderEngine } from "@0x/migrations";
-import { ContractWrappers, ERC721TokenContract } from "@0x/contract-wrappers";
+  signatureUtils,
+  BigNumber,
+  Web3ProviderEngine,
+  ERC721TokenContract
+} from "0x.js";
+//import { BigNumber } from "@0x/utils";
+//import { Web3ProviderEngine } from "@0x/migrations";
+import { ContractWrappers } from "@0x/contract-wrappers";
 import { NETWORK_CONFIGS, TX_DEFAULTS } from "./configs";
-import { Web3Wrapper } from "@0x/web3-wrapper";
 
 //constants
 const ONE_SECOND_MS = 1000;

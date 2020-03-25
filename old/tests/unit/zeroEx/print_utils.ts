@@ -10,7 +10,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { DecodedLogArgs, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
-import ora = require('ora');
+import ora from 'ora';
 
 import { DECIMALS, UNLIMITED_ALLOWANCE_IN_BASE_UNITS } from './constants';
 
