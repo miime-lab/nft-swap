@@ -246,8 +246,72 @@
           </v-btn>
         </template>
 
+        <!-- エラーメッセージ モーダル -->
         <v-card
-          v-if="!!orderForDisplay"
+          v-if="errorMessage"
+        >
+          <v-card-title
+            class="headline"
+          >
+            {{ $t('message.modal_error_title') }}
+          </v-card-title>
+
+          <v-card-text>{{ errorMessage }}</v-card-text>
+
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              color="green darken-1"
+              text
+              @click="dialog = false"
+            >
+              OK
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+
+        <!-- 取引許可 モーダル -->
+        <v-card
+          v-else-if="waitingApprovalMessage"
+        >
+          <v-card-title
+            class="headline"
+          >
+            {{ $t('message.modal_approval_title') }}
+          </v-card-title>
+
+          <v-card-text>{{ waitingApprovalMessage }}</v-card-text>
+        </v-card>
+
+        <!-- 署名待ち モーダル -->
+        <v-card
+          v-else-if="waitingSigningMessage"
+        >
+          <v-card-title
+            class="headline"
+          >
+            {{ $t('message.modal_signing_title') }}
+          </v-card-title>
+
+          <v-card-text>{{ waitingSigningMessage }}</v-card-text>
+        </v-card>
+
+        <!-- 完了 モーダル -->
+        <v-card
+          v-else-if="completedMessage"
+        >
+          <v-card-title
+            class="headline"
+          >
+            {{ $t('message.modal_completed_title') }}
+          </v-card-title>
+
+          <v-card-text>{{ completedMessage }}</v-card-text>
+        </v-card>
+
+        <!-- オーダー作成 モーダル -->
+        <v-card
+          v-else
         >
           <v-card-title
             class="headline"
@@ -257,51 +321,86 @@
 
           <v-card-text>
 
-            <div class="title mb-2">全体</div>
-            <ul>
-              <li>コントラクト:
-                  <a :href="orderForDisplay.exchangeLink" target="_blank">
-                      {{ this.orderForDisplay.exchangeName }}
-                  </a>
-              </li>
-              <li>有効期限: {{ this.orderForDisplay.expirationDate }}</li>
-            </ul>
+            <!-- コントラクト -->
+            {{ $t('message.modal_makeOrder_headline_contract') }}:
+            <a :href="orderForDisplay.exchangeLink" target="_blank">
+                {{ this.orderForDisplay.exchangeName }}
+            </a>
             <br>
 
-            <div class="title mb-2">送付側</div>
+            <!-- 有効期限 -->
+            {{ $t('message.modal_makeOrder_headline_expiration_date') }}: {{ this.orderForDisplay.expirationDate }}<br>
+            <br>
+
+            <!-- 送付側 -->
+            <div class="title mb-2">{{ $t('message.modal_makeOrder_headline_sending_side') }}</div>
             <ul>
-              <li>アドレス:
+              <li>{{ $t('message.modal_makeOrder_headline_address') }}:
                   <a :href="orderForDisplay.makerLink" target="_blank">
                       {{ this.orderForDisplay.makerAddress }}
                   </a>
               </li>
-              <li>アセット
-                <ul>
-                  <!-- <li
+              <li>{{ $t('message.modal_makeOrder_headline_assets') }}:
+                <ul
+                  v-if="!!orderForDisplay.makerAssets"
+                >
+                  <li
                     v-for="asset of orderForDisplay.makerAssets"
                     :key="asset.id"
                   >
-                  </li> -->
-                  <li>MyCryptoHeroes:Extension #20600077</li>
-                  <li>MyCryptoHeroes:Extension #20600111</li>
-                  <li>0.1 WETH</li>
+                    <span
+                      v-if="!(asset.amount > 0)"
+                    >
+                      <a
+                        :href="asset.url"
+                        target="_blank"
+                      >
+                          {{ asset.name }}
+                      </a>
+                    </span>
+                    <span
+                      v-else
+                    >
+                        {{ asset.amount }} {{ asset.symbol }}
+                    </span>
+                  </li>
                 </ul>
-              <li>支払い手数料: {{ this.orderForDisplay.makerFee.toString() }}</li>
+              <li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.makerFee ? this.orderForDisplay.makerFee.toString() : '' }}</li>
             </ul>
             <br>
 
-            <div class="title mb-2">受取側</div>
+            <!-- 受取側 -->
+            <div class="title mb-2">{{ $t('message.modal_makeOrder_headline_receiving_side') }}</div>
             <ul>
-              <li>アドレス:
+              <li>{{ $t('message.modal_makeOrder_headline_address') }}:
                   <a :href="orderForDisplay.takerLink" target="_blank">
                       {{ this.orderForDisplay.takerAddress }}
                   </a>
               </li>
-              <li>アセット
+              <li>{{ $t('message.modal_makeOrder_headline_assets') }}:
                 <ul>
-                  <li>MyCryptoHeroes:Extension #20600111</li>
+                  <li
+                    v-for="asset of orderForDisplay.takerAssets"
+                    :key="asset.id"
+                  >
+                    <span
+                      v-if="!(asset.amount > 0)"
+                    >
+                      <a
+                        :href="asset.url"
+                        target="_blank"
+                      >
+                          {{ asset.name }}
+                      </a>
+                    </span>
+                    <span
+                      v-else
+                    >
+                        {{ asset.amount }} {{ asset.symbol }}
+                    </span>
+                  </li>
                 </ul>
-              <li>支払い手数料: {{ this.orderForDisplay.takerFee.toString() }}</li>
+              <li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.takerFee ? this.orderForDisplay.takerFee.toString() : '' }}</li>
             </ul>
           </v-card-text>
 
@@ -331,6 +430,7 @@
 <script lang="js">
 /* eslint-disable */
 import moment from 'moment'
+import { ethers } from 'ethers'
 import opensea from '../plugins/opensea'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
@@ -358,7 +458,11 @@ export default {
         isNumber: value => !isNaN(value) || 'Please input a number',
         dialog: false,
         order: {},
-        orderForDisplay: null,
+        orderForDisplay: {},
+        errorMessage: null,
+        waitingApprovalMessage: null,
+        waitingSigningMessage: null,
+        completedMessage: null,
         orderJson:{},
         myAddress:"",
         assets: {
@@ -407,7 +511,7 @@ export default {
         }
     },
     methods: {
-        loadAssetInfoFromUrl (dataName, id) {
+        loadAssetInfoFromUrl(dataName, id) {
             const asset = this[dataName][id]
             if (!asset.url) {
                 return true
@@ -438,7 +542,7 @@ export default {
             }
             return true
         },
-        isAlreadyAddedAsset (dataName, url, selfId) {
+        isAlreadyAddedAsset(dataName, url, selfId) {
             if (dataName === 'sendingAssets') {
                 return this.sendingAssets.find(asset => asset.url === url && asset.id !== selfId) ||
                     this.receivingAssets.find(asset => asset.url === url)
@@ -447,11 +551,11 @@ export default {
                     this.receivingAssets.find(asset => asset.url === url && asset.id !== selfId)
             }
         },
-        addAsset (dataName) {
+        addAsset(dataName) {
             const newId = this[dataName].length
             this[dataName].push({ id: newId, url: '', image: '' })
         },
-        async setApprovalForAll (tokenAddress, myAddress) {
+        async setApprovalForAll(tokenAddress, myAddress) {
             console.log(tokenAddress)
             console.log(await libZeroEx.isApprovedForAll(tokenAddress, myAddress))
             if(!await libZeroEx.isApprovedForAll(tokenAddress, myAddress)){
@@ -464,6 +568,66 @@ export default {
             console.log(orderJson)
             const sign = await libZeroEx.sign(orderJson, this.myAddress)
             return sign
+        },
+        getAssetFromCache(contractAddress, tokenId) {
+            return this.sendingAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||
+                this.receivingAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId)
+        },
+        getAssetsForDisplay(assetData) {
+            const assetsForDisplay = []
+            const decodedData = assetDataUtils.decodeAssetDataOrThrow(assetData)
+            if (assetDataUtils.isERC721TokenAssetData(decodedData)) {
+                console.log('isERC721TokenAssetData', decodedData)
+                const asset = this.getAssetFromCache(
+                    decodedData.tokenAddress,
+                    decodedData.tokenId.toString()
+                )
+                assetsForDisplay.push(asset)
+            } else if (assetDataUtils.isMultiAssetData(decodedData)) {
+                const multiAssetData = assetDataUtils.decodeMultiAssetDataRecursively(assetData)
+                console.log('isMultiAssetData', multiAssetData)
+                for (let i = 0; i < multiAssetData.nestedAssetData.length; i++) {
+                    const assetData = multiAssetData.nestedAssetData[i]
+                    if (assetDataUtils.isERC721TokenAssetData(assetData)) {
+                        const asset = this.getAssetFromCache(
+                            assetData.tokenAddress,
+                            assetData.tokenId.toString()
+                        )
+                        assetsForDisplay.push(asset)
+                    } else if (assetDataUtils.isERC20TokenAssetData(assetData)) {
+                        if (assetData.tokenAddress !== '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2') { // WETH
+                            throw new Error('Not supported ERC20 token:', assetData)
+                        }
+                        assetsForDisplay.push({
+                            symbol: 'WETH',
+                            amount: ethers.utils.formatEther(multiAssetData.amounts[i].toString())
+                        })
+                    } else {
+                        throw new Error('Not supported asset:', assetData)
+                    }
+                }
+            } else {
+                console.log('not isERC721TokenAssetData')
+            }
+            return assetsForDisplay
+        },
+        translateOrder(order) {
+            const orderForDisplay = { ...order }
+
+            orderForDisplay.exchangeLink = 'https://etherscan.io/address/' + order.exchangeAddress
+            orderForDisplay.exchangeName =
+                order.exchangeAddress === '0x61935cbdd02287b511119ddb11aeb42f1593b7ef'
+                    ? '0x Protocol Exchange v3' : order.exchangeAddress
+
+            orderForDisplay.expirationDate = moment.unix(order.expirationTimeSeconds.toString()).format()
+
+            orderForDisplay.makerLink = 'https://etherscan.io/address/' + order.makerAddress
+            orderForDisplay.takerLink = 'https://etherscan.io/address/' + order.takerAddress
+
+            orderForDisplay.makerAssets = this.getAssetsForDisplay(order.makerAssetData)
+            orderForDisplay.takerAssets = this.getAssetsForDisplay(order.takerAssetData)
+
+            return orderForDisplay
         },
         makeOneSideInfo(assetTokens, currencyToken) {
             if (!assetTokens[0].ownerAddress) {
@@ -484,47 +648,64 @@ export default {
                 })
             }
             if (currencyToken.amount > 0) {
+                const wei = ethers.utils.parseEther(currencyToken.amount).toString()
                 result.tokenERC20 = {
                     contractAddress: currencyToken.contractAddress,
-                    amount: new BigNumber(currencyToken.amount)
+                    amount: new BigNumber(wei)
                 }
             }
+            console.log('result', result)
             return result
         },
-        translateOrder(order) {
-            const orderForDisplay = { ...order }
-
-            orderForDisplay.exchangeLink = 'https://etherscan.io/address/' + order.exchangeAddress
-            orderForDisplay.exchangeName =
-                order.exchangeAddress === '0x61935cbdd02287b511119ddb11aeb42f1593b7ef'
-                    ? '0x Protocol Exchange v3' : order.exchangeAddress
-
-            orderForDisplay.expirationDate = moment.unix(order.expirationTimeSeconds.toString()).format()
-
-            orderForDisplay.makerLink = 'https://etherscan.io/address/' + order.makerAddress
-            orderForDisplay.takerLink = 'https://etherscan.io/address/' + order.takerAddress
-
-            orderForDisplay.makerAssets = {}
-            const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(order.makerAssetData)
-            if (assetDataUtils.isERC721TokenAssetData(decodedMakerAssetData)) {
-              // 途中
-            }
-
-            return orderForDisplay
+        existAssetInputs() {
+          return this.sendingAssets[0].tokenId && this.receivingAssets[0].tokenId
         },
         async createOrder() {
-            const orderInfo = {
-                maker: this.makeOneSideInfo(this.sendingAssets, this.sendingCurrencies[0]),
-                taker: this.makeOneSideInfo(this.receivingAssets, this.receivingCurrencies[0])
+            try {
+                this.errorMessage = null
+
+                if (!this.existAssetInputs()) {
+                    this.errorMessage = this.$t('message.modal_error_no_asset')
+                    return
+                }
+
+                const orderInfo = {
+                    maker: this.makeOneSideInfo(this.sendingAssets, this.sendingCurrencies[0]),
+                    taker: this.makeOneSideInfo(this.receivingAssets, this.receivingCurrencies[0])
+                }
+                this.order = await libZeroEx.createOrderJson(orderInfo)
+                this.orderForDisplay = this.translateOrder(this.order)
+                console.log('orderForDisplay:', this.orderForDisplay)
+            } catch (e) {
+                this.errorMessage = e.message
             }
-            this.order = await libZeroEx.createOrderJson(orderInfo)
-            this.orderForDisplay = this.translateOrder(this.order)
-            console.log('order:', this.order)
-            console.log('orderForDisplay:', this.orderForDisplay)
         },
         async signOrder() {
-            console.log('signOrder')
-            this.dialog = false
+            try {
+                console.log('signOrder')
+                this.errorMessage = null
+
+                const contractAddressCache = {}
+                for (const asset of this.orderForDisplay.makerAssets) {
+                    const isApproved = await libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
+                    if (!isApproved) {
+                        this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
+                        await libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress)
+                        this.waitingSigningMessage = this.$t('message.modal_waiting_signing_message')
+                        this.waitingApprovalMessage = null
+                    }
+                }
+
+                const sign = await libZeroEx.sign(this.order, this.order.makerAddress)
+
+                // TODO: firebase にオーダーを登録する
+
+                this.completedMessage = this.$t('message.modal_completed_message')
+                this.waitingSigningMessage = null
+
+            } catch (e) {
+                this.errorMessage = e.message
+            }
         }
     },
 }
