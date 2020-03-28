@@ -6,7 +6,7 @@
     >
       <v-card-title class="text-center justify-center py-6">
         <h2
-          class="font-weight-bold display-3"
+          class="font-weight-bold display-2"
         >
           {{ $t("message.serviceName") }}
         </h2>
@@ -17,13 +17,11 @@
         grow
         icons-and-text
       >
-        <v-tab to="/">
+        <v-tab to="/" class="subtitle-1 font-weight-medium">
           {{ $t("message.tab_new") }}
-          <v-icon>mdi-plus-circle-outline</v-icon>
         </v-tab>
-        <v-tab to="/task">
+        <v-tab to="/task" class="subtitle-1 font-weight-medium">
           {{ $t("message.tab_task") }}
-          <v-icon>mdi-check-box-outline</v-icon>
         </v-tab>
       </v-tabs>
     </v-card>
@@ -38,7 +36,7 @@
       padless
     >
       <v-col
-        class="white py-2 text-center align-start white--text"
+        class="white py-2 text-center align-start white--text justify-center"
         cols="12"
       >
         <a
@@ -49,6 +47,16 @@
             src="@/assets/opensea-logo.svg"
             height="28px"
             class="ma-2 ml-0"
+          >
+        </a>
+        <a
+          href="https://0x.org/"
+          target="_brank"
+        >
+          <img
+            src="@/assets/0x-logo.svg"
+            height="24px"
+            class="ma-2 mb-3 ml-3"
           >
         </a>
         <a
@@ -69,7 +77,7 @@
         class="cyan lighten-2 py-0 text-center white--text"
         cols="12"
       >
-        © 2020 Metaps Alpha Inc.
+        © 2020 miime lab
       </v-col>
     </v-footer>
   </v-app>
