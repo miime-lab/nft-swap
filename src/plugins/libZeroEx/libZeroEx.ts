@@ -78,9 +78,9 @@ export default class libZeroEx {
   }
 
   public async createSingleERC20AssetData(token: tokenERC20): Promise<string> {
-      const tokenData = await this.contractWrappers.devUtils
-          .encodeERC20AssetData(token.contractAddress)
-          .callAsync();
+      const tokenData = assetDataUtils.encodeERC20AssetData(
+          token.contractAddress
+      );
       return tokenData;
   }
 
