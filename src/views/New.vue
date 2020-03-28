@@ -3,8 +3,8 @@
     class="fill-height"
   >
     <v-row
-      align="start"
       justify="center"
+      class="ml-0"
     >
       <v-col
         cols="12"
@@ -17,7 +17,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-20 mb-0"
+            class="elevation-4 mt-2 mb-0"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -26,7 +26,7 @@
               dark
               flat
             >
-              <v-toolbar-title>{{ $t("message.card_title_sending") }}</v-toolbar-title>
+              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_sending") }}</v-toolbar-title>
             </v-toolbar>
 
             <v-img
@@ -78,12 +78,41 @@
               </v-btn>
             </v-fab-transition>
           </v-card>
+
+          <v-card
+            class="elevation-4 mt-8 mb-0"
+          >
+            <v-toolbar
+              color="cyan lighten-2"
+              height="38px"
+              dark
+              flat
+            >
+              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_sending_weth") }}</v-toolbar-title>
+            </v-toolbar>
+
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  ref="sendingCurrencies[0].amount"
+                  v-model="sendingCurrencies[0].amount"
+                  :rules="[isNumber]"
+                  suffix="WETH"
+                  :error-messages="sendingCurrencies[0].errorMessages"
+                  placeholder="0"
+                  name="amount"
+                  type="text"
+                  class="subtitle-1"
+                />
+              </v-form>
+            </v-card-text>
+          </v-card>
         </v-item-group>
 
         <div
           align="center"
           justify="center"
-          class="mt-4 mb-3"
+          class="mt-6 mb-5"
         >
           <img
             src="@/assets/swap-allow.png"
@@ -97,7 +126,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-20 mb-0"
+            class="elevation-4 mt-2 mb-0"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -106,7 +135,7 @@
               dark
               flat
             >
-              <v-toolbar-title>{{ $t("message.card_title_receiving") }}</v-toolbar-title>
+              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_receiving") }}</v-toolbar-title>
             </v-toolbar>
 
             <v-img
@@ -124,7 +153,6 @@
             >
               {{ asset.contractName }} #{{ asset.tokenId }}
             </v-card-subtitle>
-            <!-- <v-divider v-if="!!asset.image" /> -->
 
             <v-card-text
               v-if="!asset.image"
@@ -159,40 +187,124 @@
               </v-btn>
             </v-fab-transition>
           </v-card>
-          {{ orderJson }}
+
+          <v-card
+            class="elevation-4 mt-8 mb-0"
+          >
+            <v-toolbar
+              color="orange lighten-2"
+              height="38px"
+              dark
+              flat
+            >
+              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_receiving_weth") }}</v-toolbar-title>
+            </v-toolbar>
+
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  ref="receivingCurrencies[0].amount"
+                  v-model="receivingCurrencies[0].amount"
+                  :rules="[isNumber]"
+                  suffix="WETH"
+                  :error-messages="receivingCurrencies[0].errorMessages"
+                  placeholder="0"
+                  name="amount"
+                  type="text"
+                  class="subtitle-1"
+                />
+              </v-form>
+            </v-card-text>
+          </v-card>
+
+          <!-- {{ orderJson }} -->
         </v-item-group>
       </v-col>
     </v-row>
 
     <v-row
       justify="center"
+      class="ml-0"
     >
       <v-dialog
         v-model="dialog"
         persistent
-        max-width="290"
+        scrollable
+        max-width="500"
       >
         <template
           v-slot:activator="{ on }"
         >
           <v-btn
             color="cyan lighten-2"
-            class="ma-8 white--text"
+            class="ma-8 mr-4 ml-4 white--text subtitle-1"
             dark
             v-on="on"
+            @click="createOrder"
           >
             {{ $t("message.button_makeOrder") }}
           </v-btn>
         </template>
-        <v-card>
+
+        <v-card
+          v-if="!!orderForDisplay"
+        >
           <v-card-title
             class="headline"
           >
             {{ $t("message.modal_makeOrder_title") }}
           </v-card-title>
+
           <v-card-text>
-            {{ $t("message.modal_makeOrder_message") }}
+
+            <div class="title mb-2">全体</div>
+            <ul>
+              <li>コントラクト:
+                  <a :href="orderForDisplay.exchangeLink" target="_blank">
+                      {{ this.orderForDisplay.exchangeName }}
+                  </a>
+              </li>
+              <li>有効期限: {{ this.orderForDisplay.expirationDate }}</li>
+            </ul>
+            <br>
+
+            <div class="title mb-2">送付側</div>
+            <ul>
+              <li>アドレス:
+                  <a :href="orderForDisplay.makerLink" target="_blank">
+                      {{ this.orderForDisplay.makerAddress }}
+                  </a>
+              </li>
+              <li>アセット
+                <ul>
+                  <!-- <li
+                    v-for="asset of orderForDisplay.makerAssets"
+                    :key="asset.id"
+                  >
+                  </li> -->
+                  <li>MyCryptoHeroes:Extension #20600077</li>
+                  <li>MyCryptoHeroes:Extension #20600111</li>
+                  <li>0.1 WETH</li>
+                </ul>
+              <li>支払い手数料: {{ this.orderForDisplay.makerFee.toString() }}</li>
+            </ul>
+            <br>
+
+            <div class="title mb-2">受取側</div>
+            <ul>
+              <li>アドレス:
+                  <a :href="orderForDisplay.takerLink" target="_blank">
+                      {{ this.orderForDisplay.takerAddress }}
+                  </a>
+              </li>
+              <li>アセット
+                <ul>
+                  <li>MyCryptoHeroes:Extension #20600111</li>
+                </ul>
+              <li>支払い手数料: {{ this.orderForDisplay.takerFee.toString() }}</li>
+            </ul>
           </v-card-text>
+
           <v-card-actions>
             <v-spacer />
             <v-btn
@@ -205,9 +317,9 @@
             <v-btn
               color="green darken-1"
               text
-              @click="dialog = false"
+              @click="signOrder"
             >
-              {{ $t("message.modal_makeOrder_approve") }}
+              {{ $t("message.modal_makeOrder_create") }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -217,8 +329,11 @@
 </template>
 
 <script lang="js">
+/* eslint-disable */
+import moment from 'moment'
 import opensea from '../plugins/opensea'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
+import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
 import {MetamaskSubprovider, Web3ProviderEngine, BigNumber} from '0x.js'
 const provider = new Web3ProviderEngine()
 const signer = new MetamaskSubprovider(window.web3.currentProvider)
@@ -231,23 +346,32 @@ export default {
         sendingAssets: [
             { id: 0, url: '', image: null }
         ],
+        sendingCurrencies: [
+            { id: 0, contractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', amount: '' } // WETH
+        ],
         receivingAssets: [
             { id: 0, url: '', image: null }
         ],
+        receivingCurrencies: [
+            { id: 0, contractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', amount: '' } // WETH
+        ],
+        isNumber: value => !isNaN(value) || 'Please input a number',
         dialog: false,
+        order: {},
+        orderForDisplay: null,
         orderJson:{},
         myAddress:"",
         assets: {
             maker: {
-                address: '0xc82F5fcbFAaf7CA1f6d0a969dB58A6BbA2958840',
+                address: '0x0000000000000000000000000000000000000000',
                 tokensERC721: [
                     {
                         contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: BigNumber("40150012")
+                        tokenId: "40150012"
                     },
                     {
                         contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: BigNumber("40150011")
+                        tokenId: "30230001"
                     }
                 ],
                 tokenERC20: undefined
@@ -257,7 +381,7 @@ export default {
                 tokensERC721: [
                     {
                         contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: BigNumber("40150082")
+                        tokenId: "30230001"
                     }
                 ],
                 tokenERC20: undefined
@@ -265,10 +389,22 @@ export default {
         }
     }),
     created: async function() {
-        this.myAddress = window.web3.currentProvider.selectedAddress
-        await this.setApprovalForAll("0xdceaf1652a131f32a821468dc03a92df0edd86ea", this.myAddress)
-        const sign = await this.createAndSignOrderJson(this.assets)
-        console.log(11111,sign)
+        // this.myAddress = window.web3.currentProvider.selectedAddress
+        // await this.setApprovalForAll("0xdceaf1652a131f32a821468dc03a92df0edd86ea", this.myAddress)
+        // const sign = await this.createAndSignOrderJson(this.assets)
+        // console.log(11111,sign)
+
+        const getBrowserLanguage = () => {
+          try {
+            return navigator.browserLanguage || navigator.language || navigator.userLanguage
+          } catch(e) {
+            return undefined;
+          }
+        }
+        const locale = getBrowserLanguage()
+        if (locale) {
+            moment.locale(locale)
+        }
     },
     methods: {
         loadAssetInfoFromUrl (dataName, id) {
@@ -280,7 +416,7 @@ export default {
                 const [url, contractAddress, tokenId] = asset.url.match(/.*\/(.*)\/(.*)$/)
                 console.log(url, contractAddress, tokenId)
                 if (this.isAlreadyAddedAsset(dataName, url, id)) {
-                    asset.errorMessages = 'The asset is already input.'
+                    asset.errorMessages = this.$t('message.error_already_input_asset')
                     return false
                 }
                 asset.errorMessages = ''
@@ -297,17 +433,18 @@ export default {
                     asset.loading = false
                 })
             } catch (e) {
-                asset.errorMessages = !this.sendUrl ? 'Please input OpenSea or miime URL' : 'Invalid url'
+                console.log(e)
+                asset.errorMessages = this.$t('message.error_invalid_asset_url')
             }
             return true
         },
         isAlreadyAddedAsset (dataName, url, selfId) {
             if (dataName === 'sendingAssets') {
                 return this.sendingAssets.find(asset => asset.url === url && asset.id !== selfId) ||
-          this.receivingAssets.find(asset => asset.url === url)
+                    this.receivingAssets.find(asset => asset.url === url)
             } else {
                 return this.sendingAssets.find(asset => asset.url === url) ||
-          this.receivingAssets.find(asset => asset.url === url && asset.id !== selfId)
+                    this.receivingAssets.find(asset => asset.url === url && asset.id !== selfId)
             }
         },
         addAsset (dataName) {
@@ -327,6 +464,67 @@ export default {
             console.log(orderJson)
             const sign = await libZeroEx.sign(orderJson, this.myAddress)
             return sign
+        },
+        makeOneSideInfo(assetTokens, currencyToken) {
+            if (!assetTokens[0].ownerAddress) {
+                console.log('Please input at least one asset')
+            }
+
+            const result = {
+                address: assetTokens[0].ownerAddress,
+                tokensERC721: []
+            }
+            for (const assetToken of assetTokens) {
+                if (!assetToken.contractAddress) {
+                    continue
+                }
+                result.tokensERC721.push({
+                    contractAddress: assetToken.contractAddress,
+                    tokenId: new BigNumber(assetToken.tokenId)
+                })
+            }
+            if (currencyToken.amount > 0) {
+                result.tokenERC20 = {
+                    contractAddress: currencyToken.contractAddress,
+                    amount: new BigNumber(currencyToken.amount)
+                }
+            }
+            return result
+        },
+        translateOrder(order) {
+            const orderForDisplay = { ...order }
+
+            orderForDisplay.exchangeLink = 'https://etherscan.io/address/' + order.exchangeAddress
+            orderForDisplay.exchangeName =
+                order.exchangeAddress === '0x61935cbdd02287b511119ddb11aeb42f1593b7ef'
+                    ? '0x Protocol Exchange v3' : order.exchangeAddress
+
+            orderForDisplay.expirationDate = moment.unix(order.expirationTimeSeconds.toString()).format()
+
+            orderForDisplay.makerLink = 'https://etherscan.io/address/' + order.makerAddress
+            orderForDisplay.takerLink = 'https://etherscan.io/address/' + order.takerAddress
+
+            orderForDisplay.makerAssets = {}
+            const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(order.makerAssetData)
+            if (assetDataUtils.isERC721TokenAssetData(decodedMakerAssetData)) {
+              // 途中
+            }
+
+            return orderForDisplay
+        },
+        async createOrder() {
+            const orderInfo = {
+                maker: this.makeOneSideInfo(this.sendingAssets, this.sendingCurrencies[0]),
+                taker: this.makeOneSideInfo(this.receivingAssets, this.receivingCurrencies[0])
+            }
+            this.order = await libZeroEx.createOrderJson(orderInfo)
+            this.orderForDisplay = this.translateOrder(this.order)
+            console.log('order:', this.order)
+            console.log('orderForDisplay:', this.orderForDisplay)
+        },
+        async signOrder() {
+            console.log('signOrder')
+            this.dialog = false
         }
     },
 }
