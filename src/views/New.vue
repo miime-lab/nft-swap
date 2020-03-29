@@ -430,30 +430,31 @@
 <script lang="js">
 /* eslint-disable */
 import moment from 'moment'
-import { ethers } from 'ethers'
 import opensea from '../plugins/opensea'
+import { ethers } from 'ethers'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
-import {MetamaskSubprovider, Web3ProviderEngine, BigNumber} from '0x.js'
-const provider = new Web3ProviderEngine()
-const signer = new MetamaskSubprovider(window.web3.currentProvider)
-provider.addProvider(signer)
-provider.start()
-const libZeroEx = new LibZeroEx(window.web3.currentProvider)
+import { MetamaskSubprovider, BigNumber } from '0x.js'
+// const provider = new Web3ProviderEngine()
+// const signer = new MetamaskSubprovider(window.web3.currentProvider)
+// provider.addProvider(signer)
+// provider.start()
+
 export default {
     name: 'New',
     data: () => ({
+        libZeroEx: null,
         sendingAssets: [
             { id: 0, url: '', image: null }
         ],
         sendingCurrencies: [
-            { id: 0, contractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', amount: '' } // WETH
+            { id: 0, contractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', amount: '', tokenStandard: 'ERC20' } // WETH
         ],
         receivingAssets: [
             { id: 0, url: '', image: null }
         ],
         receivingCurrencies: [
-            { id: 0, contractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', amount: '' } // WETH
+            { id: 0, contractAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', amount: '', tokenStandard: 'ERC20' } // WETH
         ],
         isNumber: value => !isNaN(value) || 'Please input a number',
         dialog: false,
@@ -534,6 +535,7 @@ export default {
                     asset.contractName = assetInfo.asset_contract.name
                     asset.contractAddress = assetInfo.asset_contract.address
                     asset.tokenId = assetInfo.token_id
+                    asset.tokenStandard = assetInfo.asset_contract.schema_name // 'ERC721' など
                     asset.loading = false
                 })
             } catch (e) {
@@ -555,20 +557,20 @@ export default {
             const newId = this[dataName].length
             this[dataName].push({ id: newId, url: '', image: '' })
         },
-        async setApprovalForAll(tokenAddress, myAddress) {
-            console.log(tokenAddress)
-            console.log(await libZeroEx.isApprovedForAll(tokenAddress, myAddress))
-            if(!await libZeroEx.isApprovedForAll(tokenAddress, myAddress)){
-                console.log("setapproval")
-                libZeroEx.setApprovalForAll(tokenAddress, myAddress)
-            }
-        },
-        async createAndSignOrderJson(orderInfo) {
-            const orderJson = await libZeroEx.createOrderJson(orderInfo)
-            console.log(orderJson)
-            const sign = await libZeroEx.sign(orderJson, this.myAddress)
-            return sign
-        },
+        // async setApprovalForAll(tokenAddress, myAddress) {
+        //     console.log(tokenAddress)
+        //     console.log(await libZeroEx.isApprovedForAll(tokenAddress, myAddress))
+        //     if(!await libZeroEx.isApprovedForAll(tokenAddress, myAddress)){
+        //         console.log("setapproval")
+        //         libZeroEx.setApprovalForAll(tokenAddress, myAddress)
+        //     }
+        // },
+        // async createAndSignOrderJson(orderInfo) {
+        //     const orderJson = await libZeroEx.createOrderJson(orderInfo)
+        //     console.log(orderJson)
+        //     const sign = await libZeroEx.sign(orderJson, this.myAddress)
+        //     return sign
+        // },
         getAssetFromCache(contractAddress, tokenId) {
             return this.sendingAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||
                 this.receivingAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId)
@@ -664,6 +666,10 @@ export default {
             try {
                 this.errorMessage = null
 
+                await window.ethereum.enable()
+                const provider = new MetamaskSubprovider(window.ethereum)
+                this.libZeroEx = new LibZeroEx(provider)
+
                 if (!this.existAssetInputs()) {
                     this.errorMessage = this.$t('message.modal_error_no_asset')
                     return
@@ -673,7 +679,7 @@ export default {
                     maker: this.makeOneSideInfo(this.sendingAssets, this.sendingCurrencies[0]),
                     taker: this.makeOneSideInfo(this.receivingAssets, this.receivingCurrencies[0])
                 }
-                this.order = await libZeroEx.createOrderJson(orderInfo)
+                this.order = await this.libZeroEx.createOrderJson(orderInfo)
                 this.orderForDisplay = this.translateOrder(this.order)
                 console.log('orderForDisplay:', this.orderForDisplay)
             } catch (e) {
@@ -687,16 +693,25 @@ export default {
 
                 const contractAddressCache = {}
                 for (const asset of this.orderForDisplay.makerAssets) {
-                    const isApproved = await libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
-                    if (!isApproved) {
-                        this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
-                        await libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress)
-                        this.waitingSigningMessage = this.$t('message.modal_waiting_signing_message')
-                        this.waitingApprovalMessage = null
+                    if (asset.tokenStandard === 'ERC721') {
+                        const isApproved = await this.libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
+                        if (!isApproved) {
+                            this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
+                            await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId)
+                        }
+                    } else if (asset.tokenStandard === 'ERC20') {
+                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, asset.ownerAddress)
+                        const amount = new BigNumber(ethers.utils.formatEther(multiAssetData.amounts[i].toString()))
+                        if (allowance.lt(amount)) {
+                            this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
+                            await this.libZeroEx.approve(asset.contractAddress, asset.ownerAddress)
+                        }
                     }
                 }
+                this.waitingSigningMessage = this.$t('message.modal_waiting_signing_message')
+                this.waitingApprovalMessage = null
 
-                const sign = await libZeroEx.sign(this.order, this.order.makerAddress)
+                const sign = await this.libZeroEx.sign(this.order, this.order.makerAddress)
 
                 // TODO: firebase にオーダーを登録する
 

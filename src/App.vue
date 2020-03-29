@@ -17,10 +17,16 @@
         grow
         icons-and-text
       >
-        <v-tab to="/" class="subtitle-1 font-weight-medium">
+        <v-tab
+          to="/"
+          class="subtitle-1 font-weight-medium"
+        >
           {{ $t("message.tab_new") }}
         </v-tab>
-        <v-tab to="/task" class="subtitle-1 font-weight-medium">
+        <v-tab
+          to="/task"
+          class="subtitle-1 font-weight-medium"
+        >
           {{ $t("message.tab_task") }}
         </v-tab>
       </v-tabs>

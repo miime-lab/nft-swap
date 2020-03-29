@@ -13,6 +13,7 @@ import {
     BigNumber,
     Web3ProviderEngine,
     ERC721TokenContract,
+    ERC20TokenContract,
 } from "0x.js";
 import { ContractWrappers } from "@0x/contract-wrappers";
 import { NETWORK_CONFIGS, TX_DEFAULTS } from "./configs";
@@ -24,6 +25,7 @@ const TEN_MINUTES_MS = ONE_MINUTE_MS * 10;
 const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
 const NULL_BYTES = "0x";
 const ZERO = new BigNumber(0);
+const MAX_ALLOWANCE = new BigNumber(2 ** 256).minus(1);
 const randomExpiration = new BigNumber(Date.now() + TEN_MINUTES_MS)
     .div(ONE_SECOND_MS)
     .integerValue(BigNumber.ROUND_CEIL);
@@ -56,17 +58,20 @@ export type orderInfo = {
 
 export default class libZeroEx {
   providerEngine: Web3ProviderEngine;
+  chainId: number;
   public contractWrappers: ContractWrappers;
-  public constructor(providerEngine: Web3ProviderEngine) {
+  public constructor(providerEngine: Web3ProviderEngine, chainId?: number) {
       this.providerEngine = providerEngine;
+      this.chainId = chainId || 1;
       this.contractWrappers = new ContractWrappers(providerEngine, {
-          chainId: NETWORK_CONFIGS.chainId
+          chainId: this.chainId
       });
   }
-  public setProviderEngine(providerEngine: Web3ProviderEngine) {
+  public setProviderEngine(providerEngine: Web3ProviderEngine, chainId?: number) {
       this.providerEngine = providerEngine;
+      this.chainId = chainId || this.chainId || 1;
       this.contractWrappers = new ContractWrappers(providerEngine, {
-          chainId: NETWORK_CONFIGS.chainId
+          chainId: chainId || 1
       });
   }
   public createSingleERC721AssetData(token: ERC721token): string {
@@ -135,7 +140,7 @@ export default class libZeroEx {
       const makerAssetData = await this.createAssetData(orderInfo.maker);
       const takerAssetData = await this.createAssetData(orderInfo.taker);
       const order: Order = {
-          chainId: NETWORK_CONFIGS.chainId,
+          chainId: this.chainId,
           exchangeAddress: this.contractWrappers.contractAddresses.exchange,
           makerAddress: orderInfo.maker.address,
           takerAddress: orderInfo.taker.address,
@@ -168,37 +173,86 @@ export default class libZeroEx {
       return false;
   }
 
+  // ERC721 Token
   public async setApprovalForAll(
       contractAddress: string,
-      makerAddress: string
-  ): Promise<string> {
+      makerAddress: string,
+      tokenId?: string
+  ): Promise<void> {
       const erc721Token = new ERC721TokenContract(
           contractAddress,
           this.providerEngine
       );
-      const makerERC721ApprovalTxHash = await erc721Token
-          .setApprovalForAll(
-              this.contractWrappers.contractAddresses.erc721Proxy,
-              true
-          )
-          .sendTransactionAsync({ from: makerAddress });
-      return makerERC721ApprovalTxHash;
+      try {
+          const makerERC721ApprovalTxHash = await erc721Token
+              .setApprovalForAll(
+                  this.contractWrappers.contractAddresses.erc721Proxy,
+                  true
+              )
+              .awaitTransactionSuccessAsync({ from: makerAddress })
+      } catch (e) {
+          // CryptoKitties などの場合
+          await erc721Token
+              .approve(
+                  this.contractWrappers.contractAddresses.erc721Proxy,
+                  new BigNumber(tokenId || 0)
+              )
+              .awaitTransactionSuccessAsync({ from: makerAddress });
+      }  
   }
   public async isApprovedForAll(
       contractAddress: string,
-      makerAddress: string
+      makerAddress: string,
+      tokenId?: string
   ): Promise<boolean> {
       const erc721Token = new ERC721TokenContract(
           contractAddress,
           this.providerEngine
       );
-      const makerERC721ApprovalTxHash = await erc721Token
-          .isApprovedForAll(
-              makerAddress,
-              this.contractWrappers.contractAddresses.erc721Proxy
-          ).callAsync({ from: makerAddress })
-      return makerERC721ApprovalTxHash;
+      try {
+          const makerERC721ApprovalTxHash = await erc721Token
+              .isApprovedForAll(
+                  makerAddress,
+                  this.contractWrappers.contractAddresses.erc721Proxy
+              ).callAsync({ from: makerAddress })
+          return makerERC721ApprovalTxHash;
+      } catch (e) {
+          // CryptoKitties などの場合
+          return false
+      }
   }
+
+  // ERC20 Token
+  public async approve(
+      contractAddress: string,
+      makerAddress: string
+  ): Promise<void> {
+      const erc20Token = new ERC20TokenContract(
+          contractAddress,
+          this.providerEngine
+      );
+      await erc20Token
+          .approve(
+              this.contractWrappers.contractAddresses.erc721Proxy,
+              MAX_ALLOWANCE
+          )
+          .awaitTransactionSuccessAsync({ from: makerAddress });
+  }
+  public async allowance(
+      contractAddress: string,
+      makerAddress: string
+  ): Promise<BigNumber> {
+      const erc20Token = new ERC20TokenContract(
+          contractAddress,
+          this.providerEngine
+      );
+      return await erc20Token
+          .allowance(
+              makerAddress,
+              this.contractWrappers.contractAddresses.erc20Proxy
+          ).callAsync({ from: makerAddress })
+  }
+
   public async fillOrder(
       signedOrder: SignedOrder,
       taker: string,
