@@ -26,7 +26,9 @@
               dark
               flat
             >
-              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_sending") }}</v-toolbar-title>
+              <v-toolbar-title class="subtitle-1">
+                {{ $t("message.card_title_sending") }}
+              </v-toolbar-title>
             </v-toolbar>
 
             <v-img
@@ -88,7 +90,9 @@
               dark
               flat
             >
-              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_sending_weth") }}</v-toolbar-title>
+              <v-toolbar-title class="subtitle-1">
+                {{ $t("message.card_title_sending_weth") }}
+              </v-toolbar-title>
             </v-toolbar>
 
             <v-card-text>
@@ -135,7 +139,9 @@
               dark
               flat
             >
-              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_receiving") }}</v-toolbar-title>
+              <v-toolbar-title class="subtitle-1">
+                {{ $t("message.card_title_receiving") }}
+              </v-toolbar-title>
             </v-toolbar>
 
             <v-img
@@ -197,7 +203,9 @@
               dark
               flat
             >
-              <v-toolbar-title class="subtitle-1">{{ $t("message.card_title_receiving_weth") }}</v-toolbar-title>
+              <v-toolbar-title class="subtitle-1">
+                {{ $t("message.card_title_receiving_weth") }}
+              </v-toolbar-title>
             </v-toolbar>
 
             <v-card-text>
@@ -320,11 +328,13 @@
           </v-card-title>
 
           <v-card-text>
-
             <!-- コントラクト -->
             {{ $t('message.modal_makeOrder_headline_contract') }}:
-            <a :href="orderForDisplay.exchangeLink" target="_blank">
-                {{ this.orderForDisplay.exchangeName }}
+            <a
+:href="orderForDisplay.exchangeLink"
+               target="_blank"
+>
+              {{ this.orderForDisplay.exchangeName }}
             </a>
             <br>
 
@@ -333,14 +343,21 @@
             <br>
 
             <!-- 送付側 -->
-            <div class="title mb-2">{{ $t('message.modal_makeOrder_headline_sending_side') }}</div>
+            <div class="title mb-2">
+              {{ $t('message.modal_makeOrder_headline_sending_side') }}
+            </div>
             <ul>
-              <li>{{ $t('message.modal_makeOrder_headline_address') }}:
-                  <a :href="orderForDisplay.makerLink" target="_blank">
-                      {{ this.orderForDisplay.makerAddress }}
-                  </a>
+              <li>
+                {{ $t('message.modal_makeOrder_headline_address') }}:
+                <a
+:href="orderForDisplay.makerLink"
+                   target="_blank"
+>
+                  {{ this.orderForDisplay.makerAddress }}
+                </a>
               </li>
-              <li>{{ $t('message.modal_makeOrder_headline_assets') }}:
+              <li>
+{{ $t('message.modal_makeOrder_headline_assets') }}:
                 <ul
                   v-if="!!orderForDisplay.makerAssets"
                 >
@@ -355,29 +372,36 @@
                         :href="asset.url"
                         target="_blank"
                       >
-                          {{ asset.name }}
+                        {{ asset.name }}
                       </a>
                     </span>
                     <span
                       v-else
                     >
-                        {{ asset.amount }} {{ asset.symbol }}
+                      {{ asset.amount }} {{ asset.symbol }}
                     </span>
                   </li>
                 </ul>
-              <li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.makerFee ? this.orderForDisplay.makerFee.toString() : '' }}</li>
+              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.makerFee ? this.orderForDisplay.makerFee.toString() : '' }}</li>
             </ul>
             <br>
 
             <!-- 受取側 -->
-            <div class="title mb-2">{{ $t('message.modal_makeOrder_headline_receiving_side') }}</div>
+            <div class="title mb-2">
+              {{ $t('message.modal_makeOrder_headline_receiving_side') }}
+            </div>
             <ul>
-              <li>{{ $t('message.modal_makeOrder_headline_address') }}:
-                  <a :href="orderForDisplay.takerLink" target="_blank">
-                      {{ this.orderForDisplay.takerAddress }}
-                  </a>
+              <li>
+                {{ $t('message.modal_makeOrder_headline_address') }}:
+                <a
+:href="orderForDisplay.takerLink"
+                   target="_blank"
+>
+                  {{ this.orderForDisplay.takerAddress }}
+                </a>
               </li>
-              <li>{{ $t('message.modal_makeOrder_headline_assets') }}:
+              <li>
+{{ $t('message.modal_makeOrder_headline_assets') }}:
                 <ul>
                   <li
                     v-for="asset of orderForDisplay.takerAssets"
@@ -390,17 +414,17 @@
                         :href="asset.url"
                         target="_blank"
                       >
-                          {{ asset.name }}
+                        {{ asset.name }}
                       </a>
                     </span>
                     <span
                       v-else
                     >
-                        {{ asset.amount }} {{ asset.symbol }}
+                      {{ asset.amount }} {{ asset.symbol }}
                     </span>
                   </li>
                 </ul>
-              <li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.takerFee ? this.orderForDisplay.takerFee.toString() : '' }}</li>
+              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.takerFee ? this.orderForDisplay.takerFee.toString() : '' }}</li>
             </ul>
           </v-card-text>
 
@@ -434,6 +458,7 @@ import opensea from '../plugins/opensea'
 import { ethers } from 'ethers'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
+import Firestore from '../plugins/firestore'
 import { MetamaskSubprovider, BigNumber } from '0x.js'
 // const provider = new Web3ProviderEngine()
 // const signer = new MetamaskSubprovider(window.web3.currentProvider)
@@ -498,7 +523,7 @@ export default {
         // await this.setApprovalForAll("0xdceaf1652a131f32a821468dc03a92df0edd86ea", this.myAddress)
         // const sign = await this.createAndSignOrderJson(this.assets)
         // console.log(11111,sign)
-
+        await Firestore.addOrder({test:"test"})
         const getBrowserLanguage = () => {
           try {
             return navigator.browserLanguage || navigator.language || navigator.userLanguage
