@@ -15,7 +15,7 @@ export default class Firestore {
         return orderData
     }
 
-    async getOrderByMakerAddress(makerAddress: string, perPage: number, docSnapshot: object | undefined): Promise<any> {
+    async getOrderByMakerAddress(makerAddress: string, perPage: number, docSnapshot: any | undefined): Promise<any> {
         interface output {
             docSnapshot: any,
             dataArray: object[]
@@ -25,21 +25,21 @@ export default class Firestore {
         var query = this.db
             .collection("orders")
             .where("makerAddress", '==', makerAddress)
-            .limit(perPage)
+            .orderBy("updatedAt")
         if (docSnapshot === undefined) {
-            await query.get()
+            await query.limit(perPage).get()
                 .then((snapshot: any) => {
+                    output.docSnapshot = snapshot
                     snapshot.forEach((doc: any) => {
-                        output.docSnapshot = snapshot
                         output.dataArray.push(doc.data())
                     });
                 })
-            console.log(2222,output.docSnapshot)
         } else {
-            return await query.startAfter(docSnapshot).get()
+            await query.startAfter(docSnapshot.docs[docSnapshot.docs.length-1]).limit(perPage).get()
                 .then((snapshot: any) => {
                     snapshot.forEach((doc: any) => {
                         console.log(doc.data())
+                        output.dataArray.push(doc.data())
                     });
                 })
         }
@@ -61,7 +61,7 @@ export default class Firestore {
             .update(dic)
     }
 
-    async deleteOrder(docId: string) {
+    async deleteOrder(docId: String) {
         await this.db
             .collection("orders")
             .doc(docId)

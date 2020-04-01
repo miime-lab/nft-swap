@@ -27,14 +27,18 @@ describe('outer', ()=>{
     test("getOrderByMakerAddress", async()=>{
         var makerAddressList:String[] = ["aaaa", "bbbb", "cccc","aaaa","aaaa"]
         var objectIdList:String[] = []
-        makerAddressList.map(async(address)=>{
-            objectIdList.push(
-            await firestore.addOrder({makerAddress:address}))
-        })
-        const first = await firestore.getOrderByMakerAddress("aaaa",2,undefined)
-        console.log(first.docSnapshot)
-        // pagination by snapshot still not work....
-        // const second = await firestore.getOrderByMakerAddress("aaaa",2,first.docSnapshot)
+        for (const address of makerAddressList){
+            const objId = await firestore.addOrder({updatedAt:new Date().getTime(), makerAddress:address})
+            console.log(objId)
+            objectIdList.push(objId)}
+        console.log(1111,objectIdList)
+        //getFirstPage
+        const firstPage = await firestore.getOrderByMakerAddress("aaaa",2,undefined)
+        expect(firstPage.dataArray.length).toBe(2)
+        //getSecondPage, pass docSnapshot of first page
+        const secondPage = await firestore.getOrderByMakerAddress("aaaa",2,firstPage.docSnapshot)
+        expect(secondPage.dataArray.length).toBe(1)
+        objectIdList.map(async(val)=>await firestore.deleteOrder(val))
     })
     })
 
