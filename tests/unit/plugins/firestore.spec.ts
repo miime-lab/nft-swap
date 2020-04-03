@@ -43,5 +43,21 @@ describe('outer', ()=>{
         //delete all
         objectIdList.map(async(val)=>await firestore.deleteOrder(val))
     })
+    test("getOrderByTakerAddress", async()=>{
+        var makerAddressList:String[] = ["aaaa", "bbbb", "cccc","aaaa","aaaa"]
+        var objectIdList:String[] = []
+        for (const address of makerAddressList){
+            const objId = await firestore.addOrder({updatedAt:new Date().getTime(), makerAddress:address})
+            console.log(objId)
+            objectIdList.push(objId)}
+        console.log(1111,objectIdList)
+
+        //getFirstPage
+        const firstPage = await firestore.getOrderByTakerAddress("aaaa",2,undefined)
+        expect(firstPage.dataArray.length).toBe(2)
+
+        //delete all
+        objectIdList.map(async(val)=>await firestore.deleteOrder(val))
+    })
     })
 
