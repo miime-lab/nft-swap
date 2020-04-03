@@ -315,8 +315,8 @@
           <v-card-text>{{ completedMessage }}</v-card-text>
 
           <v-card-text>
-            <a :href="'http://localhost:8080/order/' + this.orderId">
-              http://localhost:8080/order/{{ orderId }}
+            <a :href="'https://nftswap.tokyo/order/' + this.orderId">
+              https://nftswap.tokyo/order/{{ orderId }}
             </a>
           </v-card-text>
 
@@ -750,14 +750,14 @@ export default {
                 console.log('signedOrder', signedOrder)
                 const normalizedOrder = this.normalizeOrder(signedOrder)
 
-                const nowDate = moment().format()
+                const nowDate = new Date().getTime()
                 const docId = await firestore.addOrder({
                   order: normalizedOrder,
                   sellerAddress: this.order.makerAddress,
                   buyerAddress: this.order.takerAddress,
                   makerAssets: this.orderForDisplay.makerAssets,
                   takerAssets: this.orderForDisplay.takerAssets,
-                  ceratedAt: nowDate,
+                  createdAt: nowDate,
                   updatedAt: nowDate
                 })
                 console.log('docId', docId)
