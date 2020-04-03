@@ -4,14 +4,26 @@
       color="cyan lighten-1"
       dark
     >
-      <v-card-title class="text-center justify-center py-6">
+      <v-card-title
+        class="text-center
+        justify-center py-6"
+      >
         <h2
           class="font-weight-bold display-2"
         >
+          <router-link
+            to="/"
+            class="routerLink white--text"
+          >
           {{ $t("message.serviceName") }}
+          </router-link>
         </h2>
       </v-card-title>
+
+      <!-- <v-tabs
+        v-if="$router.currentRoute.path === '/' || $router.currentRoute.path === '/task'" -->
       <v-tabs
+        v-if="false"
         background-color="transparent"
         dark
         grow
@@ -96,3 +108,9 @@ export default Vue.extend({
     name: 'App'
 })
 </script>
+
+<style>
+.routerLink{
+    text-decoration: none;
+}
+</style>
