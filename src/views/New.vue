@@ -224,8 +224,6 @@
               </v-form>
             </v-card-text>
           </v-card>
-
-          <!-- {{ orderJson }} -->
         </v-item-group>
       </v-col>
     </v-row>
@@ -315,6 +313,26 @@
           </v-card-title>
 
           <v-card-text>{{ completedMessage }}</v-card-text>
+
+          <v-card-text>http://localhost:8080/order/{{ orderId }}</v-card-text>
+
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              color="green darken-1"
+              text
+              @click="moveToNewPage"
+            >
+              {{ $t("message.modal_completed_move_to_new_page") }}
+            </v-btn>
+            <v-btn
+              color="green darken-1"
+              text
+              @click="moveToTaskPage"
+            >
+              {{ $t("message.modal_completed_move_to_task_page") }}
+            </v-btn>
+          </v-card-actions>
         </v-card>
 
         <!-- オーダー作成 モーダル -->
@@ -331,9 +349,9 @@
             <!-- コントラクト -->
             {{ $t('message.modal_makeOrder_headline_contract') }}:
             <a
-:href="orderForDisplay.exchangeLink"
-               target="_blank"
->
+              :href="orderForDisplay.exchangeLink"
+              target="_blank"
+            >
               {{ this.orderForDisplay.exchangeName }}
             </a>
             <br>
@@ -350,14 +368,14 @@
               <li>
                 {{ $t('message.modal_makeOrder_headline_address') }}:
                 <a
-:href="orderForDisplay.makerLink"
-                   target="_blank"
->
+                  :href="orderForDisplay.makerLink"
+                  target="_blank"
+                >
                   {{ this.orderForDisplay.makerAddress }}
                 </a>
               </li>
               <li>
-{{ $t('message.modal_makeOrder_headline_assets') }}:
+                {{ $t('message.modal_makeOrder_headline_assets') }}:
                 <ul
                   v-if="!!orderForDisplay.makerAssets"
                 >
@@ -394,14 +412,14 @@
               <li>
                 {{ $t('message.modal_makeOrder_headline_address') }}:
                 <a
-:href="orderForDisplay.takerLink"
-                   target="_blank"
->
+                  :href="orderForDisplay.takerLink"
+                  target="_blank"
+                >
                   {{ this.orderForDisplay.takerAddress }}
                 </a>
               </li>
               <li>
-{{ $t('message.modal_makeOrder_headline_assets') }}:
+                {{ $t('message.modal_makeOrder_headline_assets') }}:
                 <ul>
                   <li
                     v-for="asset of orderForDisplay.takerAssets"
@@ -453,17 +471,13 @@
 
 <script lang="js">
 /* eslint-disable */
-import moment from 'moment'
 import opensea from '../plugins/opensea'
+import firestore from '../plugins/firestore'
+import moment from 'moment'
 import { ethers } from 'ethers'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
-import firestore from '../plugins/firestore'
 import { MetamaskSubprovider, BigNumber } from '0x.js'
-// const provider = new Web3ProviderEngine()
-// const signer = new MetamaskSubprovider(window.web3.currentProvider)
-// provider.addProvider(signer)
-// provider.start()
 
 export default {
     name: 'New',
@@ -485,45 +499,13 @@ export default {
         dialog: false,
         order: {},
         orderForDisplay: {},
+        orderId: null,
         errorMessage: null,
         waitingApprovalMessage: null,
         waitingSigningMessage: null,
-        completedMessage: null,
-        orderJson:{},
-        myAddress:"",
-        assets: {
-            maker: {
-                address: '0x0000000000000000000000000000000000000000',
-                tokensERC721: [
-                    {
-                        contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: "40150012"
-                    },
-                    {
-                        contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: "30230001"
-                    }
-                ],
-                tokenERC20: undefined
-            },
-            taker: {
-                address: '0x0000000000000000000000000000000000000000',
-                tokensERC721: [
-                    {
-                        contractAddress: '0x0000000000000000000000000000000000000000',
-                        tokenId: "30230001"
-                    }
-                ],
-                tokenERC20: undefined
-            },
-        }
+        completedMessage: null
     }),
     created: async function() {
-        // this.myAddress = window.web3.currentProvider.selectedAddress
-        // await this.setApprovalForAll("0xdceaf1652a131f32a821468dc03a92df0edd86ea", this.myAddress)
-        // const sign = await this.createAndSignOrderJson(this.assets)
-        // console.log(11111,sign)
-        // await firestore.addOrder({test:"test"})
         const getBrowserLanguage = () => {
           try {
             return navigator.browserLanguage || navigator.language || navigator.userLanguage
@@ -582,20 +564,6 @@ export default {
             const newId = this[dataName].length
             this[dataName].push({ id: newId, url: '', image: '' })
         },
-        // async setApprovalForAll(tokenAddress, myAddress) {
-        //     console.log(tokenAddress)
-        //     console.log(await libZeroEx.isApprovedForAll(tokenAddress, myAddress))
-        //     if(!await libZeroEx.isApprovedForAll(tokenAddress, myAddress)){
-        //         console.log("setapproval")
-        //         libZeroEx.setApprovalForAll(tokenAddress, myAddress)
-        //     }
-        // },
-        // async createAndSignOrderJson(orderInfo) {
-        //     const orderJson = await libZeroEx.createOrderJson(orderInfo)
-        //     console.log(orderJson)
-        //     const sign = await libZeroEx.sign(orderJson, this.myAddress)
-        //     return sign
-        // },
         getAssetFromCache(contractAddress, tokenId) {
             return this.sendingAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||
                 this.receivingAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId)
@@ -685,15 +653,25 @@ export default {
             return result
         },
         existAssetInputs() {
-          return this.sendingAssets[0].tokenId && this.receivingAssets[0].tokenId
+            return this.sendingAssets[0].tokenId && this.receivingAssets[0].tokenId
+        },
+        resetMordal() {
+            this.order = {}
+            this.orderForDisplay = {}
+            this.orderId = null
+            this.waitingApprovalMessage = null
+            this.waitingSigningMessage = null
+            this.completedMessage = null
         },
         async createOrder() {
             try {
                 this.errorMessage = null
 
-                await window.ethereum.enable()
-                const provider = new MetamaskSubprovider(window.ethereum)
-                this.libZeroEx = new LibZeroEx(provider)
+                if (!this.libZeroEx) {
+                    await window.ethereum.enable()
+                    const provider = new MetamaskSubprovider(window.ethereum)
+                    this.libZeroEx = new LibZeroEx(provider)
+                }
 
                 if (!this.existAssetInputs()) {
                     this.errorMessage = this.$t('message.modal_error_no_asset')
@@ -708,6 +686,7 @@ export default {
                 this.orderForDisplay = this.translateOrder(this.order)
                 console.log('orderForDisplay:', this.orderForDisplay)
             } catch (e) {
+                this.resetMordal()
                 this.errorMessage = e.message
             }
         },
@@ -737,17 +716,47 @@ export default {
                 this.waitingApprovalMessage = null
 
                 const signedOrder = await this.libZeroEx.sign(this.order, this.order.makerAddress)
-                // TODO: normalize
+                console.log('signedOrder', signedOrder)
+                const normalizedOrder = this.normalizeOrder(signedOrder)
 
-                // const docId = await firestore.addOrder({ order: signedOrder, createdDate: new Date() })
+                const nowDate = moment().format()
+                const docId = await firestore.addOrder({
+                  order: normalizedOrder,
+                  sellerAddress: this.order.makerAddress,
+                  buyerAddress: this.order.takerAddress,
+                  makerAssets: this.orderForDisplay.makerAssets,
+                  takerAssets: this.orderForDisplay.takerAssets,
+                  ceratedAt: nowDate,
+                  updatedAt: nowDate
+                })
                 console.log('docId', docId)
 
+                this.orderId = docId
                 this.completedMessage = this.$t('message.modal_completed_message')
                 this.waitingSigningMessage = null
 
             } catch (e) {
+                this.resetMordal()
                 this.errorMessage = e.message
             }
+        },
+        normalizeOrder(order) {
+            const result = { ...order }
+            result.expirationTimeSeconds = order.expirationTimeSeconds.toString()
+            result.salt = order.salt.toString()
+            result.makerAssetAmount = order.makerAssetAmount.toString()
+            result.takerAssetAmount = order.takerAssetAmount.toString()
+            result.makerFee = order.makerFee.toString()
+            result.takerFee = order.takerFee.toString()
+            return result
+        },
+        moveToNewPage() {
+            this.dialog = false
+            this.$router.go({ path: this.$router.currentRoute.path, force: true })
+        },
+        moveToTaskPage() {
+            this.dialog = false
+            this.$router.push({ path: '/task' })
         }
     },
 }
