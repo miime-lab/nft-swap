@@ -4,7 +4,8 @@ dotenv.config({ path: '.env' });
 if (!firebase.apps.length){
     var config = {
         apiKey: "AIzaSyA-xGtoOduDV5Grln5isEt_-2AM2lMTdm",
-        authDomain: "https://nft-swap.firebaseio.com",
+        // authDomain: "https://nft-swap.firebaseio.com",
+        authDomain: "https://nftswap.tokyo",
         projectId: "nft-swap",
     }
     firebase.initializeApp(config)
