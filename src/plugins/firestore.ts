@@ -1,5 +1,5 @@
 import firebase from './firebase'
-export default class Firestore {
+class Firestore {
     db: any;
     constructor() {
         this.db = firebase.firestore()
@@ -67,5 +67,6 @@ export default class Firestore {
             .doc(docId)
             .delete()
     }
-
 }
+
+export default new Firestore()

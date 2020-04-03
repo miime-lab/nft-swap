@@ -1,5 +1,4 @@
-import Firestore from '../../../src/plugins/firestore';
-const firestore = new Firestore()
+import firestore from '../../../src/plugins/firestore';
 interface testData {
     makerAddress: string
     status: string

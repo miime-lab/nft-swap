@@ -458,7 +458,7 @@ import opensea from '../plugins/opensea'
 import { ethers } from 'ethers'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
-import Firestore from '../plugins/firestore'
+import firestore from '../plugins/firestore'
 import { MetamaskSubprovider, BigNumber } from '0x.js'
 // const provider = new Web3ProviderEngine()
 // const signer = new MetamaskSubprovider(window.web3.currentProvider)
@@ -523,7 +523,7 @@ export default {
         // await this.setApprovalForAll("0xdceaf1652a131f32a821468dc03a92df0edd86ea", this.myAddress)
         // const sign = await this.createAndSignOrderJson(this.assets)
         // console.log(11111,sign)
-        await Firestore.addOrder({test:"test"})
+        // await firestore.addOrder({test:"test"})
         const getBrowserLanguage = () => {
           try {
             return navigator.browserLanguage || navigator.language || navigator.userLanguage
@@ -736,9 +736,11 @@ export default {
                 this.waitingSigningMessage = this.$t('message.modal_waiting_signing_message')
                 this.waitingApprovalMessage = null
 
-                const sign = await this.libZeroEx.sign(this.order, this.order.makerAddress)
+                const signedOrder = await this.libZeroEx.sign(this.order, this.order.makerAddress)
+                // TODO: normalize
 
-                // TODO: firebase にオーダーを登録する
+                // const docId = await firestore.addOrder({ order: signedOrder, createdDate: new Date() })
+                console.log('docId', docId)
 
                 this.completedMessage = this.$t('message.modal_completed_message')
                 this.waitingSigningMessage = null
