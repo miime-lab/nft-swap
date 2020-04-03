@@ -106,3 +106,5 @@ dist
 
 # Mac
 .DS_Store
+# firebase-setting
+./src/plugins/firebase.ts

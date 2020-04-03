@@ -32,12 +32,16 @@ describe('outer', ()=>{
             console.log(objId)
             objectIdList.push(objId)}
         console.log(1111,objectIdList)
+
         //getFirstPage
         const firstPage = await firestore.getOrderByMakerAddress("aaaa",2,undefined)
         expect(firstPage.dataArray.length).toBe(2)
+
         //getSecondPage, pass docSnapshot of first page
         const secondPage = await firestore.getOrderByMakerAddress("aaaa",2,firstPage.docSnapshot)
         expect(secondPage.dataArray.length).toBe(1)
+
+        //delete all
         objectIdList.map(async(val)=>await firestore.deleteOrder(val))
     })
     })
