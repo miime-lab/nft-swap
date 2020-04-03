@@ -16,17 +16,29 @@ class Firestore {
     }
 
     async getOrderByMakerAddress(makerAddress: string, perPage: number, docSnapshot: any | undefined): Promise<any> {
+        var query = this.db
+            .collection("orders")
+            .where("makerAddress", '==', makerAddress)
+            .orderBy("updatedAt")
+        return this.queryWithPagination(query, docSnapshot,perPage)
+    }
+
+    async getOrderByTakerAddress(makerAddress: string, perPage: number, docSnapshot: any | undefined): Promise<any> {
+        var query = this.db
+            .collection("orders")
+            .where("takerAddress", '==', makerAddress)
+            .orderBy("updatedAt")
+        return this.queryWithPagination(query, docSnapshot,perPage)
+    }
+
+    async queryWithPagination(query:any, docSnapshot:any|undefined, perPage:number){
         interface output {
             docSnapshot: any,
             dataArray: object[]
         }
         var output: output
         output = { docSnapshot: {}, dataArray: [] }
-        var query = this.db
-            .collection("orders")
-            .where("makerAddress", '==', makerAddress)
-            .orderBy("updatedAt")
-        if (docSnapshot === undefined) {
+        if (docSnapshot === undefined){
             await query.limit(perPage).get()
                 .then((snapshot: any) => {
                     output.docSnapshot = snapshot
@@ -38,7 +50,6 @@ class Firestore {
             await query.startAfter(docSnapshot.docs[docSnapshot.docs.length-1]).limit(perPage).get()
                 .then((snapshot: any) => {
                     snapshot.forEach((doc: any) => {
-                        console.log(doc.data())
                         output.dataArray.push(doc.data())
                     });
                 })
