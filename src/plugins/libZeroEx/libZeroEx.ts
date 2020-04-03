@@ -1,7 +1,6 @@
 // expirationDateの追加
-// ・インスタンス化するとき、メタマスク等のプロバイダーを設定できるようにする
 // ・tokensERC1155の追加（できれば）
-// ・createMultiAssetDataとcreateMixAssetDataはひとつにまとめたい（どちらもmultiAssetData） 
+// ・createMultiAssetDataとcreateMixAssetDataはひとつにまとめたい（どちらもmultiAssetData）
 // ・…とここまで書いて、createMixAssetDataって内部だけで使う関数ですかね。であれば、publicじゃないほうがいいかも
 
 import {
@@ -37,8 +36,8 @@ export type ERC721token = {
 };
 export type ERC1155token = {
   contractAddress: string;
-  tokenId: BigNumber;
-  amount: BigNumber;
+  tokenId: BigNumber[];
+  amount: BigNumber[];
 }
 export type tokenERC20 = {
   contractAddress: string;
@@ -80,6 +79,16 @@ export default class libZeroEx {
           token.tokenId
       );
       return makerAssetData;
+  }
+
+  public createSingleERC1155AssetData(token:ERC1155token): string {
+      const makerAssetData = assetDataUtils.encodeERC1155AssetData(
+          token.contractAddress,
+          token.tokenId,
+          token.amount,
+          ""
+      );
+      return makerAssetData
   }
 
   public async createSingleERC20AssetData(token: tokenERC20): Promise<string> {
@@ -198,7 +207,7 @@ export default class libZeroEx {
                   new BigNumber(tokenId || 0)
               )
               .awaitTransactionSuccessAsync({ from: makerAddress });
-      }  
+      }
   }
   public async isApprovedForAll(
       contractAddress: string,

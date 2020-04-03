@@ -2,22 +2,22 @@
 # yarn lockfile v1
 
 
-"0x.js@9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/0x.js/-/0x.js-9.1.0.tgz#8addb733649b02a859859dbff486661fdc560c95"
-  integrity sha512-7DOyOtIOC/LTy+6UjimVB0VeXN/1CEBudKhJPWf6FxJSBEDCHOUVoUiDndnvqX+gQ/IFeYiAY4bT7PawmcW3xw==
+"0x.js@^9.1.0":
+  version "9.1.5"
+  resolved "https://registry.yarnpkg.com/0x.js/-/0x.js-9.1.5.tgz#def75e8cacdf573d67f0c3f677135640a0efaca6"
+  integrity sha512-Aopxd3zzJgQjX1yosm0L6p4ddNy33UvtcL1mkZhadG7aJ6u9LGLn47QxpA+BqLf0JNvS+iwctOFkKFx0ZKCi2g==
   dependencies:
     "@0x/abi-gen-wrappers" "^5.4.0-beta.3"
-    "@0x/assert" "^3.0.6"
-    "@0x/asset-swapper" "^4.1.2"
-    "@0x/base-contract" "^6.2.0"
-    "@0x/contract-wrappers" "^13.5.0"
-    "@0x/order-utils" "^10.2.0"
-    "@0x/subproviders" "^6.0.7"
+    "@0x/assert" "^3.0.7"
+    "@0x/asset-swapper" "^4.4.0"
+    "@0x/base-contract" "^6.2.1"
+    "@0x/contract-wrappers" "^13.6.3"
+    "@0x/order-utils" "^10.2.4"
+    "@0x/subproviders" "^6.0.8"
     "@0x/types" "^3.1.2"
     "@0x/typescript-typings" "^5.0.2"
-    "@0x/utils" "^5.4.0"
-    "@0x/web3-wrapper" "^7.0.6"
+    "@0x/utils" "^5.4.1"
+    "@0x/web3-wrapper" "^7.0.7"
     "@types/web3-provider-engine" "^14.0.0"
     ethereum-types "^3.1.0"
     ethers "~4.0.4"
@@ -61,7 +61,7 @@
     lodash "^4.17.11"
     valid-url "^1.0.9"
 
-"@0x/assert@^3.0.6", "@0x/assert@^3.0.7":
+"@0x/assert@^3.0.7":
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/@0x/assert/-/assert-3.0.7.tgz#fb616533ed00480bd642f8419d28e88b547c30df"
   integrity sha512-HYdVvIgj/wVb20MVveazLQwICxZGelNuyu/U09ZSMzRy1NrDgrBiMjrU4WrcpW2GTPZjl+7R4U4/7h/C8I/egQ==
@@ -72,7 +72,7 @@
     lodash "^4.17.11"
     valid-url "^1.0.9"
 
-"@0x/asset-swapper@^4.1.2":
+"@0x/asset-swapper@^4.4.0":
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/@0x/asset-swapper/-/asset-swapper-4.4.0.tgz#bde12000964e5132805ded134908da0d494b2f32"
   integrity sha512-acs0RXtOcR65kift8Mj9wtvx9uvsUqFDtfRd59pu+yA3IiNRf83PL7uvvph2YsrD2z8zdvBjf3PisSGxRqWKCQ==
@@ -105,7 +105,7 @@
     js-sha3 "^0.7.0"
     uuid "^3.3.2"
 
-"@0x/base-contract@^6.2.0", "@0x/base-contract@^6.2.1":
+"@0x/base-contract@^6.2.1":
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-6.2.1.tgz#8d3bc64fd1fb7d791306d3dd2faf73b3dfe8bdd4"
   integrity sha512-P4aQ93CMD5VXhRDNmO8mnXEI8NhroIpsu5Hlrsz+DNZ6JmNyKNykg2GjjXuGiS8NMyW2yyZujZ79vqYhVCo2mg==
@@ -150,7 +150,7 @@
   resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-4.9.0.tgz#4d07695db35970b6073b21e1203fff5898e77a4c"
   integrity sha512-hun5mapuUY1FqVOKujnPF0gdIM9CFf3CRSDl4CZZk4QS4OTN+qQ2XFmAiodSwLYy+dpN0jwqD/HGNz0fC9CR4Q==
 
-"@0x/contract-wrappers@^13.5.0", "@0x/contract-wrappers@^13.6.3":
+"@0x/contract-wrappers@^13.6.3":
   version "13.6.3"
   resolved "https://registry.yarnpkg.com/@0x/contract-wrappers/-/contract-wrappers-13.6.3.tgz#82333bc473615c871aaf1c222a20750b8d332eca"
   integrity sha512-FpfGEQ9cxw9UFGYzRZRlf/3kmIP5V3zXtCDTOZH4WKRc6uqceUXle5byvsns48KrD+zph/6qyQEcHdDvGSgtVw==
@@ -206,7 +206,7 @@
     uuid "^3.3.2"
     websocket "^1.0.29"
 
-"@0x/order-utils@^10.2.0", "@0x/order-utils@^10.2.4":
+"@0x/order-utils@^10.2.4":
   version "10.2.4"
   resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-10.2.4.tgz#23afe4656c9c71f2cf80f510154f7e2900515d68"
   integrity sha512-ekxE/a1zaJEetlYEiBQawNpB4QInUXFAXdSi4uD4203oDvJzcUE4vnoCfyx/VMm3Fr94y6B3kIvXy6uMoC8+3w==
@@ -232,7 +232,7 @@
     "@0x/order-utils" "^10.2.4"
     "@0x/utils" "^5.4.1"
 
-"@0x/subproviders@^6.0.7":
+"@0x/subproviders@^6.0.8":
   version "6.0.8"
   resolved "https://registry.yarnpkg.com/@0x/subproviders/-/subproviders-6.0.8.tgz#5fd7461201d434785f231e9d5f2b1b1015e8cc1b"
   integrity sha512-OEFZ6qdkHfAvkkcvXSLiCJd2V87NGiZvNcZZkNeupCK77mlDnO0k/IpCe3hr9bUu8PV8vOBvrQaE973vjyCfgQ==
@@ -328,7 +328,7 @@
     js-sha3 "^0.7.0"
     lodash "^4.17.11"
 
-"@0x/utils@^5.4.0", "@0x/utils@^5.4.1":
+"@0x/utils@^5.4.1":
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-5.4.1.tgz#5ec5f0d08dad38543b6ff8199bdf8f3d0e63488e"
   integrity sha512-zmolzXYt1FZlF3nGI9I1FaMdPp3kQAO/ZmtObFjN2KHG35dl+BBk/lSlWtmaqlVLaSLBQzLREKgjswKEcyT+xA==
@@ -378,7 +378,7 @@
     ethers "~4.0.4"
     lodash "^4.17.11"
 
-"@0x/web3-wrapper@^7.0.6", "@0x/web3-wrapper@^7.0.7":
+"@0x/web3-wrapper@^7.0.7":
   version "7.0.7"
   resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-7.0.7.tgz#c88b46b1b79e1775e3581d3cbd3e8f26ce220bd1"
   integrity sha512-4dqtJW14W2E/hFBL0mTBd6w7QYp3l+OxAsJwhbmB9xnhZj8DfLrQA2RC+cFZnUarhjUeXlUh2B1Zr6YXLv3lEQ==
