@@ -10,6 +10,7 @@
     </v-app-bar>
     <!--
       <v-tabs
+        v-if="false"
         background-color="transparent"
         dark
         grow
@@ -76,7 +77,7 @@
       <v-divider />
 
       <v-col
-        class="cyan lighten-2 py-0 text-center white--text"
+        class="cyan lighten-2 py-0 text-center white--text caption"
         cols="12"
       >
         © 2020 miime lab
@@ -92,3 +93,9 @@ export default Vue.extend({
     name: 'App'
 })
 </script>
+
+<style>
+.routerLink{
+    text-decoration: none;
+}
+</style>

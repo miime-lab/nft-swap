@@ -15,7 +15,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-4 mt-2 mb-0"
+            class="elevation-4 mt-2 mb-0 pa-0 justify-center"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -29,21 +29,42 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-img
-              v-if="!!asset.image"
-              class="align-end"
-              :src="asset.image"
-            />
-            <v-card-title
+            <v-row
               v-if="!!asset.name"
+              justify="center"
             >
-              {{ asset.name }}
-            </v-card-title>
-            <v-card-subtitle
-              v-if="!!asset.contractName"
-            >
-              {{ asset.contractName }} #{{ asset.tokenId }}
-            </v-card-subtitle>
+              <v-col
+                cols="2"
+                class="d-flex justify-center align-center pl-4"
+              >
+                <v-icon @click="close(asset)">
+                  mdi-close
+                </v-icon>
+              </v-col>
+              <v-col cols="6">
+                <v-card-title
+                  v-if="!!asset.name"
+                  class="subtitle-1 ma-0 pa-0"
+                >
+                  {{ asset.name }}
+                </v-card-title>
+                <v-card-subtitle
+                  v-if="!!asset.contractName"
+                  class="caption ma-0 pa-0"
+                >
+                  {{ asset.contractName }} #{{ asset.tokenId }}
+                </v-card-subtitle>
+              </v-col>
+              <v-col cols="4">
+                <v-img
+                  v-if="!!asset.image"
+                  class="align-center justify-center pa-0 ma-0"
+                  :src="asset.image"
+                  height="100px"
+                  max-width="100px"
+                />
+              </v-col>
+            </v-row>
 
             <v-card-text
               v-if="!asset.image"
@@ -57,6 +78,7 @@
                   :error-messages="asset.errorMessages"
                   name="url"
                   type="text"
+                  class="ma-0 pa-0"
                 />
               </v-form>
             </v-card-text>
@@ -142,11 +164,16 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-img
-              v-if="!!asset.image"
-              class="align-end"
-              :src="asset.image"
-            />
+            <v-row justify="center">
+              <v-img
+                v-if="!!asset.image"
+                class="align-center justify-center"
+                :src="asset.image"
+                height="100%"
+                max-width="200"
+              />
+            </v-row>
+
             <v-card-title
               v-if="!!asset.name"
             >
@@ -312,11 +339,34 @@
 
           <v-card-text>{{ completedMessage }}</v-card-text>
 
-          <v-card-text>http://localhost:8080/order/{{ orderId }}</v-card-text>
+          <v-card-text>
+            {{ baseUrl + '/order/' + orderId }}
+            <v-btn
+              color="grey darken-1"
+              text
+              small
+              @click="copyToClipboard(baseUrl + '/order/' + orderId)"
+            >
+              <v-icon
+                small
+                class="ml-1"
+              >
+                mdi-content-copy
+              </v-icon>
+            </v-btn>
+          </v-card-text>
 
           <v-card-actions>
             <v-spacer />
             <v-btn
+              color="green darken-1"
+              text
+              @click="moveToOrderPage(orderId)"
+            >
+              {{ $t("message.modal_completed_move_to_order_page") }}
+            </v-btn>
+
+            <!-- <v-btn
               color="green darken-1"
               text
               @click="moveToNewPage"
@@ -329,7 +379,7 @@
               @click="moveToTaskPage"
             >
               {{ $t("message.modal_completed_move_to_task_page") }}
-            </v-btn>
+            </v-btn> -->
           </v-card-actions>
         </v-card>
 
@@ -350,12 +400,12 @@
               :href="orderForDisplay.exchangeLink"
               target="_blank"
             >
-              {{ this.orderForDisplay.exchangeName }}
+              {{ orderForDisplay.exchangeName }}
             </a>
             <br>
 
             <!-- 有効期限 -->
-            {{ $t('message.modal_makeOrder_headline_expiration_date') }}: {{ this.orderForDisplay.expirationDate }}<br>
+            {{ $t('message.modal_makeOrder_headline_expiration_date') }}: {{ orderForDisplay.expirationDate }}<br>
             <br>
 
             <!-- 送付側 -->
@@ -369,7 +419,7 @@
                   :href="orderForDisplay.makerLink"
                   target="_blank"
                 >
-                  {{ this.orderForDisplay.makerAddress }}
+                  {{ orderForDisplay.makerAddress }}
                 </a>
               </li>
               <li>
@@ -390,6 +440,12 @@
                       >
                         {{ asset.name }}
                       </a>
+                      <v-img
+                        :src="asset.image"
+                        height="100%"
+                        max-width="80"
+                        class="grey lighten-4 mt-1 mb-1"
+                      />
                     </span>
                     <span
                       v-else
@@ -398,7 +454,7 @@
                     </span>
                   </li>
                 </ul>
-              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.makerFee ? this.orderForDisplay.makerFee.toString() : '' }}</li>
+              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ orderForDisplay.makerFee ? orderForDisplay.makerFee.toString() : '' }}</li>
             </ul>
             <br>
 
@@ -413,7 +469,7 @@
                   :href="orderForDisplay.takerLink"
                   target="_blank"
                 >
-                  {{ this.orderForDisplay.takerAddress }}
+                  {{ orderForDisplay.takerAddress }}
                 </a>
               </li>
               <li>
@@ -432,6 +488,12 @@
                       >
                         {{ asset.name }}
                       </a>
+                      <v-img
+                        :src="asset.image"
+                        height="100%"
+                        max-width="80"
+                        class="grey lighten-4 mt-1 mb-1"
+                      />
                     </span>
                     <span
                       v-else
@@ -440,7 +502,7 @@
                     </span>
                   </li>
                 </ul>
-              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.takerFee ? this.orderForDisplay.takerFee.toString() : '' }}</li>
+              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ orderForDisplay.takerFee ? orderForDisplay.takerFee.toString() : '' }}</li>
             </ul>
           </v-card-text>
 
@@ -464,10 +526,23 @@
         </v-card>
       </v-dialog>
     </v-row>
+
+    <v-row
+      justify="center"
+      class="ml-0"
+    >
+      <v-btn
+        class="mb-8 mr-4 ml-4 grey--text subtitle-1"
+        depressed
+        @click="moveToNewPage"
+      >
+        {{ $t("message.button_reset") }}
+      </v-btn>
+    </v-row>
   </v-container>
 </template>
 
-<script lang="js">
+<script>
 /* eslint-disable */
 import opensea from '../plugins/opensea'
 import firestore from '../plugins/firestore'
@@ -499,15 +574,19 @@ export default {
         orderForDisplay: {},
         orderId: null,
         errorMessage: null,
-        waitingApprovalMessage: null,
         waitingSigningMessage: null,
-        completedMessage: null
+        waitingApprovalMessage: null,
+        completedMessage: null,
+        baseUrl: ''
     }),
     created: async function() {
+        this.baseUrl = window.location.protocol + '//' + window.location.host
+
         const getBrowserLanguage = () => {
           try {
             return navigator.browserLanguage || navigator.language || navigator.userLanguage
           } catch(e) {
+            console.log(e)
             return undefined;
           }
         }
@@ -517,6 +596,10 @@ export default {
         }
     },
     methods: {
+        async copyToClipboard(text) {
+            await navigator.clipboard.writeText(text)
+            alert(this.$t('message.modal_completed_clipboard_copy_done'))
+        },
         loadAssetInfoFromUrl(dataName, id) {
             const asset = this[dataName][id]
             if (!asset.url) {
@@ -533,15 +616,21 @@ export default {
                 asset.loading = 'cyan lighten-2'
                 opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
                     console.log('assetInfo', assetInfo)
-                    // sendingAsset.image = asset.image_preview_url
-                    asset.image = assetInfo.image_url
-                    asset.name = assetInfo.name
-                    asset.ownerAddress = assetInfo.owner.address
-                    asset.contractName = assetInfo.asset_contract.name
-                    asset.contractAddress = assetInfo.asset_contract.address
-                    asset.tokenId = assetInfo.token_id
-                    asset.tokenStandard = assetInfo.asset_contract.schema_name // 'ERC721' など
-                    asset.loading = false
+                    if (assetInfo.asset_contract.schema_name !== 'ERC721') {
+                        this.dialog = true
+                        this.errorMessage = this.$t('message.error_unsupported_token_standard')
+                        asset.url = ''
+                    } else {
+                        // sendingAsset.image = asset.image_preview_url
+                        asset.image = assetInfo.image_url
+                        asset.name = assetInfo.name
+                        asset.ownerAddress = assetInfo.owner.address
+                        asset.contractName = assetInfo.asset_contract.name
+                        asset.contractAddress = assetInfo.asset_contract.address
+                        asset.tokenId = assetInfo.token_id
+                        asset.tokenStandard = assetInfo.asset_contract.schema_name // 'ERC721' など
+                        asset.loading = false
+                    }
                 })
             } catch (e) {
                 console.log(e)
@@ -593,7 +682,9 @@ export default {
                         }
                         assetsForDisplay.push({
                             symbol: 'WETH',
-                            amount: ethers.utils.formatEther(multiAssetData.amounts[i].toString())
+                            amount: ethers.utils.formatEther(multiAssetData.amounts[i].toString()),
+                            tokenStandard: "ERC20",
+                            contractAddress: assetData.tokenAddress
                         })
                     } else {
                         throw new Error('Not supported asset:', assetData)
@@ -624,16 +715,22 @@ export default {
         },
         makeOneSideInfo(assetTokens, currencyToken) {
             if (!assetTokens[0].ownerAddress) {
-                console.log('Please input at least one asset')
+                console.log(this.$t('message.modal_error_no_asset'))
+                throw new Error(this.$t('message.modal_error_no_asset'))
             }
 
+            const ownerAddress = assetTokens[0].ownerAddress
             const result = {
-                address: assetTokens[0].ownerAddress,
+                address: ownerAddress,
                 tokensERC721: []
             }
             for (const assetToken of assetTokens) {
                 if (!assetToken.contractAddress) {
                     continue
+                }
+                if (ownerAddress !== assetToken.ownerAddress) {
+                    console.log(this.$t('message.modal_error_wrong_owner'))
+                    throw new Error(this.$t('message.modal_error_wrong_owner'))
                 }
                 result.tokensERC721.push({
                     contractAddress: assetToken.contractAddress,
@@ -653,7 +750,7 @@ export default {
         existAssetInputs() {
             return this.sendingAssets[0].tokenId && this.receivingAssets[0].tokenId
         },
-        resetMordal() {
+        resetModal() {
             this.order = {}
             this.orderForDisplay = {}
             this.orderId = null
@@ -666,9 +763,14 @@ export default {
                 this.errorMessage = null
 
                 if (!this.libZeroEx) {
-                    await window.ethereum.enable()
-                    const provider = new MetamaskSubprovider(window.ethereum)
-                    this.libZeroEx = new LibZeroEx(provider)
+                    if (window.ethereum) {
+                      await window.ethereum.enable()
+                      const provider = new MetamaskSubprovider(window.ethereum)
+                      this.libZeroEx = new LibZeroEx(provider)
+                    } else {
+                      const provider = new MetamaskSubprovider(window.web3.currentProvider)
+                      this.libZeroEx = new LibZeroEx(provider)
+                    }
                 }
 
                 if (!this.existAssetInputs()) {
@@ -684,7 +786,8 @@ export default {
                 this.orderForDisplay = this.translateOrder(this.order)
                 console.log('orderForDisplay:', this.orderForDisplay)
             } catch (e) {
-                this.resetMordal()
+                console.log(e)
+                this.resetModal()
                 this.errorMessage = e.message
             }
         },
@@ -695,6 +798,7 @@ export default {
 
                 const contractAddressCache = {}
                 for (const asset of this.orderForDisplay.makerAssets) {
+                    console.log('tokenStandard', asset.tokenStandard)
                     if (asset.tokenStandard === 'ERC721') {
                         const isApproved = await this.libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
                         if (!isApproved) {
@@ -702,11 +806,19 @@ export default {
                             await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId)
                         }
                     } else if (asset.tokenStandard === 'ERC20') {
-                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, asset.ownerAddress)
-                        const amount = new BigNumber(ethers.utils.formatEther(multiAssetData.amounts[i].toString()))
+                        // 残高チェック
+                        const amount = new BigNumber(ethers.utils.parseEther(asset.amount.toString()).toString())
+                        const balance = await this.libZeroEx.balanceOf(asset.contractAddress, this.order.makerAddress)
+                        console.log('balance', balance.toString())
+                        if (balance.lt(amount)) {
+                            this.errorMessage = this.$t('message.modal_error_weth_insufficient_balance')
+                            return
+                        }
+
+                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, this.order.makerAddress)
                         if (allowance.lt(amount)) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
-                            await this.libZeroEx.approve(asset.contractAddress, asset.ownerAddress)
+                            await this.libZeroEx.approve(asset.contractAddress, this.order.makerAddress)
                         }
                     }
                 }
@@ -717,25 +829,30 @@ export default {
                 console.log('signedOrder', signedOrder)
                 const normalizedOrder = this.normalizeOrder(signedOrder)
 
-                const nowDate = moment().format()
+                const nowDate = new Date().getTime()
                 const docId = await firestore.addOrder({
                   order: normalizedOrder,
                   sellerAddress: this.order.makerAddress,
                   buyerAddress: this.order.takerAddress,
                   makerAssets: this.orderForDisplay.makerAssets,
                   takerAssets: this.orderForDisplay.takerAssets,
-                  ceratedAt: nowDate,
+                  createdAt: nowDate,
                   updatedAt: nowDate
                 })
                 console.log('docId', docId)
 
                 this.orderId = docId
-                this.completedMessage = this.$t('message.modal_completed_message')
                 this.waitingSigningMessage = null
+                this.completedMessage = this.$t('message.modal_completed_message')
 
             } catch (e) {
-                this.resetMordal()
-                this.errorMessage = e.message
+                console.log(e)
+                this.resetModal()
+                if (e.message.includes('Specified signerAddress')) {
+                    this.errorMessage = this.$t('message.modal_error_wrong_signer')
+                } else {
+                    this.errorMessage = e.message
+                }
             }
         },
         normalizeOrder(order) {
@@ -747,6 +864,11 @@ export default {
             result.makerFee = order.makerFee.toString()
             result.takerFee = order.takerFee.toString()
             return result
+        },
+        moveToOrderPage(id) {
+            console.log('id', id)
+            this.dialog = false
+            this.$router.push({ name: 'Order', params: { id }})
         },
         moveToNewPage() {
             this.dialog = false

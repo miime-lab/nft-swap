@@ -21,14 +21,11 @@ import { NETWORK_CONFIGS, TX_DEFAULTS } from "./configs";
 //constants
 const ONE_SECOND_MS = 1000;
 const ONE_MINUTE_MS = ONE_SECOND_MS * 60;
-const TEN_MINUTES_MS = ONE_MINUTE_MS * 10;
+const THREE_DAYS_MS = ONE_MINUTE_MS * 60 * 24 * 3;
 const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
 const NULL_BYTES = "0x";
 const ZERO = new BigNumber(0);
-const MAX_ALLOWANCE = new BigNumber(2 ** 256).minus(1);
-const randomExpiration = new BigNumber(Date.now() + TEN_MINUTES_MS)
-    .div(ONE_SECOND_MS)
-    .integerValue(BigNumber.ROUND_CEIL);
+const MAX_ALLOWANCE = new BigNumber(2 ** 255).minus(1);
 
 //types
 export type ERC721token = {
@@ -139,6 +136,9 @@ export default class libZeroEx {
   public async createOrderJson(orderInfo: orderInfo): Promise<Order> {
       const makerAssetData = await this.createAssetData(orderInfo.maker);
       const takerAssetData = await this.createAssetData(orderInfo.taker);
+      const expirationTimeSeconds = new BigNumber(Date.now() + THREE_DAYS_MS)
+          .div(ONE_SECOND_MS)
+          .integerValue(BigNumber.ROUND_CEIL);
       const order: Order = {
           chainId: this.chainId,
           exchangeAddress: this.contractWrappers.contractAddresses.exchange,
@@ -146,7 +146,7 @@ export default class libZeroEx {
           takerAddress: orderInfo.taker.address,
           senderAddress: NULL_ADDRESS,
           feeRecipientAddress: this.contractWrappers.contractAddresses.exchange,
-          expirationTimeSeconds: randomExpiration,
+          expirationTimeSeconds: expirationTimeSeconds,
           salt: generatePseudoRandomSalt(),
           makerAssetAmount: new BigNumber(1),
           takerAssetAmount: new BigNumber(1),
@@ -233,7 +233,7 @@ export default class libZeroEx {
       );
       await erc20Token
           .approve(
-              this.contractWrappers.contractAddresses.erc721Proxy,
+              this.contractWrappers.contractAddresses.erc20Proxy,
               MAX_ALLOWANCE
           )
           .awaitTransactionSuccessAsync({ from: makerAddress });
@@ -252,6 +252,18 @@ export default class libZeroEx {
               this.contractWrappers.contractAddresses.erc20Proxy
           ).callAsync({ from: makerAddress })
   }
+  public async balanceOf(
+      contractAddress: string,
+      makerAddress: string
+  ): Promise<BigNumber> {
+      const erc20Token = new ERC20TokenContract(
+          contractAddress,
+          this.providerEngine
+      );
+      return await erc20Token
+          .balanceOf(makerAddress)
+          .callAsync({ from: makerAddress })
+  }
 
   public async fillOrder(
       signedOrder: SignedOrder,
@@ -266,6 +278,20 @@ export default class libZeroEx {
               value: this.calculateProtocolFee([signedOrder])
           });
       return txHash;
+  }
+
+  public async getOrderInfo(
+      order: SignedOrder,
+      fromAddress: string
+  ): Promise<{
+      orderStatus: number;
+      orderHash: string;
+      orderTakerAssetFilledAmount: BigNumber;
+  }> {
+      const orderInfo = await this.contractWrappers.exchange
+          .getOrderInfo(order)
+          .callAsync({ from: fromAddress })
+      return orderInfo
   }
 
   calculateProtocolFee(
