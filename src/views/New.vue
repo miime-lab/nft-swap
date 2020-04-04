@@ -32,15 +32,8 @@
             <v-row
               v-if="!!asset.name"
               justify="center"
+              class="ml-1"
             >
-              <v-col
-                cols="2"
-                class="d-flex justify-center align-center pl-4"
-              >
-                <v-icon @click="removeSendingAsset(asset)">
-                  mdi-close
-                </v-icon>
-              </v-col>
               <v-col cols="6">
                 <v-card-title
                   v-if="!!asset.name"
@@ -55,14 +48,22 @@
                   {{ asset.contractName }} #{{ asset.tokenId }}
                 </v-card-subtitle>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="4" align="center">
                 <v-img
                   v-if="!!asset.image"
                   class="align-center justify-center pa-0 ma-0"
                   :src="asset.image"
-                  height="100px"
+                  height="100%"
                   max-width="100px"
                 />
+              </v-col>
+              <v-col
+                cols="2"
+                class="d-flex justify-center align-center pr-5"
+              >
+                <v-icon @click="removeSendingAsset(asset)">
+                  mdi-close
+                </v-icon>
               </v-col>
             </v-row>
 
@@ -164,26 +165,43 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-row justify="center">
-              <v-img
-                v-if="!!asset.image"
-                class="align-center justify-center"
-                :src="asset.image"
-                height="100%"
-                max-width="200"
-              />
-            </v-row>
-
-            <v-card-title
+            <v-row
               v-if="!!asset.name"
+              justify="center"
+              class="ml-1"
             >
-              {{ asset.name }}
-            </v-card-title>
-            <v-card-subtitle
-              v-if="!!asset.contractName"
-            >
-              {{ asset.contractName }} #{{ asset.tokenId }}
-            </v-card-subtitle>
+              <v-col cols="6">
+                <v-card-title
+                  v-if="!!asset.name"
+                  class="subtitle-1 ma-0 pa-0"
+                >
+                  {{ asset.name }}
+                </v-card-title>
+                <v-card-subtitle
+                  v-if="!!asset.contractName"
+                  class="caption ma-0 pa-0"
+                >
+                  {{ asset.contractName }} #{{ asset.tokenId }}
+                </v-card-subtitle>
+              </v-col>
+              <v-col cols="4" align="center">
+                <v-img
+                  v-if="!!asset.image"
+                  class="align-center justify-center pa-0 ma-0"
+                  :src="asset.image"
+                  height="100%"
+                  max-width="100px"
+                />
+              </v-col>
+              <v-col
+                cols="2"
+                class="d-flex justify-center align-center pr-5"
+              >
+                <v-icon @click="removeReceivingAsset(asset)">
+                  mdi-close
+                </v-icon>
+              </v-col>
+            </v-row>
 
             <v-card-text
               v-if="!asset.image"
@@ -596,14 +614,23 @@ export default {
         }
     },
     methods: {
-        removeSendingAsset(dic) {
-          this.sendingAssets = this.sendingAssets.filter(elem=>
-              !(elem.id === dic.id && elem.url===dic.url && elem.image===dic.image)          )
-          if(this.sendingAssets.length<1){
-           this.sendingAssets=[
-            { id: 0, url: '', image: null }
-        ]
-          }
+        removeSendingAsset(asset) {
+            this.sendingAssets = this.sendingAssets.filter(elem =>
+                !(elem.id === asset.id && elem.url === asset.url && elem.image === asset.image))
+            if (this.sendingAssets.length < 1) {
+                this.sendingAssets = [
+                    { id: 0, url: '', image: null }
+                ]
+            }
+        },
+        removeReceivingAsset(asset) {
+            this.receivingAssets = this.receivingAssets.filter(elem =>
+                !(elem.id === asset.id && elem.url === asset.url && elem.image === asset.image))
+            if (this.receivingAssets.length < 1) {
+                this.receivingAssets = [
+                    { id: 0, url: '', image: null }
+                ]
+            }
         },
         async copyToClipboard(text) {
             await navigator.clipboard.writeText(text)
