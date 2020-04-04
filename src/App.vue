@@ -15,7 +15,7 @@
             to="/"
             class="routerLink white--text"
           >
-          {{ $t("message.serviceName") }}
+            {{ $t("message.serviceName") }}
           </router-link>
         </h2>
       </v-card-title>
@@ -92,7 +92,7 @@
       <v-divider />
 
       <v-col
-        class="cyan lighten-2 py-0 text-center white--text"
+        class="cyan lighten-2 py-0 text-center white--text caption"
         cols="12"
       >
         © 2020 miime lab

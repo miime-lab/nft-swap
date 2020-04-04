@@ -17,7 +17,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-4 mt-2 mb-0"
+            class="elevation-4 mt-2 mb-0 justify-center"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -31,13 +31,19 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-img
-              v-if="!!asset.image"
-              class="align-end"
-              :src="asset.image"
-            />
+            <v-row justify="center">
+              <v-img
+                v-if="!!asset.image"
+                class="align-center justify-center"
+                :src="asset.image"
+                height="100%"
+                max-width="200"
+              />
+            </v-row>
+
             <v-card-title
               v-if="!!asset.name"
+              class="subtitle-1"
             >
               {{ asset.name }}
             </v-card-title>
@@ -144,11 +150,16 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-img
-              v-if="!!asset.image"
-              class="align-end"
-              :src="asset.image"
-            />
+            <v-row justify="center">
+              <v-img
+                v-if="!!asset.image"
+                class="align-center justify-center"
+                :src="asset.image"
+                height="100%"
+                max-width="200"
+              />
+            </v-row>
+
             <v-card-title
               v-if="!!asset.name"
             >
@@ -315,9 +326,20 @@
           <v-card-text>{{ completedMessage }}</v-card-text>
 
           <v-card-text>
-            <a :href="'https://nftswap.tokyo/order/' + this.orderId">
-              https://nftswap.tokyo/order/{{ orderId }}
-            </a>
+            {{ baseUrl + '/order/' + orderId }}
+            <v-btn
+              color="grey darken-1"
+              text
+              small
+              @click="copyToClipboard(baseUrl + '/order/' + orderId)"
+            >
+              <v-icon
+                small
+                class="ml-1"
+              >
+                mdi-content-copy
+              </v-icon>
+            </v-btn>
           </v-card-text>
 
           <v-card-actions>
@@ -406,10 +428,10 @@
                       </a>
                       <v-img
                         :src="asset.image"
-                        height="80"
+                        height="100%"
                         max-width="80"
                         class="grey lighten-4 mt-1 mb-1"
-                      ></v-img>
+                      />
                     </span>
                     <span
                       v-else
@@ -454,10 +476,10 @@
                       </a>
                       <v-img
                         :src="asset.image"
-                        height="80"
+                        height="100%"
                         max-width="80"
                         class="grey lighten-4 mt-1 mb-1"
-                      ></v-img>
+                      />
                     </span>
                     <span
                       v-else
@@ -489,6 +511,19 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+    </v-row>
+
+    <v-row
+      justify="center"
+      class="ml-0"
+    >
+      <v-btn
+        class="mb-8 mr-4 ml-4 grey--text subtitle-1"
+        depressed
+        @click="moveToNewPage"
+      >
+        {{ $t("message.button_reset") }}
+      </v-btn>
     </v-row>
   </v-container>
 </template>
@@ -527,9 +562,12 @@ export default {
         errorMessage: null,
         waitingSigningMessage: null,
         waitingApprovalMessage: null,
-        completedMessage: null
+        completedMessage: null,
+        baseUrl: ''
     }),
     created: async function() {
+        this.baseUrl = window.location.protocol + '//' + window.location.host
+
         const getBrowserLanguage = () => {
           try {
             return navigator.browserLanguage || navigator.language || navigator.userLanguage
@@ -544,6 +582,10 @@ export default {
         }
     },
     methods: {
+        async copyToClipboard(text) {
+            await navigator.clipboard.writeText(text)
+            alert(this.$t('message.modal_completed_clipboard_copy_done'))
+        },
         loadAssetInfoFromUrl(dataName, id) {
             const asset = this[dataName][id]
             if (!asset.url) {
@@ -560,15 +602,21 @@ export default {
                 asset.loading = 'cyan lighten-2'
                 opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
                     console.log('assetInfo', assetInfo)
-                    // sendingAsset.image = asset.image_preview_url
-                    asset.image = assetInfo.image_url
-                    asset.name = assetInfo.name
-                    asset.ownerAddress = assetInfo.owner.address
-                    asset.contractName = assetInfo.asset_contract.name
-                    asset.contractAddress = assetInfo.asset_contract.address
-                    asset.tokenId = assetInfo.token_id
-                    asset.tokenStandard = assetInfo.asset_contract.schema_name // 'ERC721' など
-                    asset.loading = false
+                    if (assetInfo.asset_contract.schema_name !== 'ERC721') {
+                        this.dialog = true
+                        this.errorMessage = this.$t('message.error_unsupported_token_standard')
+                        asset.url = ''
+                    } else {
+                        // sendingAsset.image = asset.image_preview_url
+                        asset.image = assetInfo.image_url
+                        asset.name = assetInfo.name
+                        asset.ownerAddress = assetInfo.owner.address
+                        asset.contractName = assetInfo.asset_contract.name
+                        asset.contractAddress = assetInfo.asset_contract.address
+                        asset.tokenId = assetInfo.token_id
+                        asset.tokenStandard = assetInfo.asset_contract.schema_name // 'ERC721' など
+                        asset.loading = false
+                    }
                 })
             } catch (e) {
                 console.log(e)
@@ -620,7 +668,9 @@ export default {
                         }
                         assetsForDisplay.push({
                             symbol: 'WETH',
-                            amount: ethers.utils.formatEther(multiAssetData.amounts[i].toString())
+                            amount: ethers.utils.formatEther(multiAssetData.amounts[i].toString()),
+                            tokenStandard: "ERC20",
+                            contractAddress: assetData.tokenAddress
                         })
                     } else {
                         throw new Error('Not supported asset:', assetData)
@@ -651,16 +701,22 @@ export default {
         },
         makeOneSideInfo(assetTokens, currencyToken) {
             if (!assetTokens[0].ownerAddress) {
-                console.log('Please input at least one asset')
+                console.log(this.$t('message.modal_error_no_asset'))
+                throw new Error(this.$t('message.modal_error_no_asset'))
             }
 
+            const ownerAddress = assetTokens[0].ownerAddress
             const result = {
-                address: assetTokens[0].ownerAddress,
+                address: ownerAddress,
                 tokensERC721: []
             }
             for (const assetToken of assetTokens) {
                 if (!assetToken.contractAddress) {
                     continue
+                }
+                if (ownerAddress !== assetToken.ownerAddress) {
+                    console.log(this.$t('message.modal_error_wrong_owner'))
+                    throw new Error(this.$t('message.modal_error_wrong_owner'))
                 }
                 result.tokensERC721.push({
                     contractAddress: assetToken.contractAddress,
@@ -680,7 +736,7 @@ export default {
         existAssetInputs() {
             return this.sendingAssets[0].tokenId && this.receivingAssets[0].tokenId
         },
-        resetMordal() {
+        resetModal() {
             this.order = {}
             this.orderForDisplay = {}
             this.orderId = null
@@ -717,7 +773,7 @@ export default {
                 console.log('orderForDisplay:', this.orderForDisplay)
             } catch (e) {
                 console.log(e)
-                this.resetMordal()
+                this.resetModal()
                 this.errorMessage = e.message
             }
         },
@@ -728,18 +784,27 @@ export default {
 
                 const contractAddressCache = {}
                 for (const asset of this.orderForDisplay.makerAssets) {
+                    console.log('tokenStandard', asset.tokenStandard)
                     if (asset.tokenStandard === 'ERC721') {
                         const isApproved = await this.libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
                         if (!isApproved) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
                             await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId)
                         }
-                    } else if (asset.tokenStandard === 'ERC20') {
-                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, asset.ownerAddress)
-                        const amount = new BigNumber(ethers.utils.formatEther(multiAssetData.amounts[i].toString()))
+                    } else if (asset.tokenStandard === 'ERC20') {                        
+                        // 残高チェック
+                        const amount = new BigNumber(ethers.utils.parseEther(asset.amount.toString()).toString())
+                        const balance = await this.libZeroEx.balanceOf(asset.contractAddress, this.order.makerAddress)
+                        console.log('balance', balance.toString())
+                        if (balance.lt(amount)) {
+                            this.errorMessage = this.$t('message.modal_error_weth_insufficient_balance')
+                            return
+                        }
+
+                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, this.order.makerAddress)
                         if (allowance.lt(amount)) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
-                            await this.libZeroEx.approve(asset.contractAddress, asset.ownerAddress)
+                            await this.libZeroEx.approve(asset.contractAddress, this.order.makerAddress)
                         }
                     }
                 }
@@ -768,8 +833,12 @@ export default {
 
             } catch (e) {
                 console.log(e)
-                this.resetMordal()
-                this.errorMessage = e.message
+                this.resetModal()
+                if (e.message.includes('Specified signerAddress')) {
+                    this.errorMessage = this.$t('message.modal_error_wrong_signer')
+                } else {
+                    this.errorMessage = e.message
+                }
             }
         },
         normalizeOrder(order) {

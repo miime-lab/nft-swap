@@ -11,7 +11,6 @@
         sm="8"
         md="4"
       >
-
         <v-dialog
           v-model="dialog"
           persistent
@@ -67,6 +66,30 @@
 
             <v-card-text>{{ waitingSendMessage }}</v-card-text>
           </v-card>
+
+          <!-- 完了 モーダル -->
+          <v-card
+            v-else-if="completedMessage"
+          >
+            <v-card-title
+              class="headline"
+            >
+              {{ $t('message.order_page.modal_completed_title') }}
+            </v-card-title>
+
+            <v-card-text>{{ completedMessage }}</v-card-text>
+
+            <v-card-actions>
+              <v-spacer />
+              <v-btn
+                color="green darken-1"
+                text
+                @click="fillOrderCompleted"
+              >
+                OK
+              </v-btn>
+            </v-card-actions>
+          </v-card>
         </v-dialog>
 
         <!-- オーダー詳細 -->
@@ -74,27 +97,40 @@
           v-if="!!order.makerAddress"
           class="elevation-20 mb-0"
         >
-
-          <!-- <v-toolbar
-            color="cyan lighten-2"
-            height="40px"
-            dark
-            flat
+          <v-row
+            class="align-center justify-space-between"
           >
-            <v-toolbar-title class="headline">
-              {{ $t("message.order_page.card_title_orderDetail") }}
-            </v-toolbar-title>
-          </v-toolbar> -->
-          <v-card-title
-            class="headline"
-            color="cyan lighten-2"
-            dark
-            flat
-          >
-            {{ $t("message.order_page.card_title_orderDetail") }}
-          </v-card-title>
+            <v-col>
+              <v-card-title
+                color="cyan lighten-2"
+                dark
+                flat
+              >
+                {{ $t("message.order_page.card_title_orderDetail") }}
+              </v-card-title>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="grey darken-1"
+                text
+                small
+                @click="copyUrl"
+              >
+                {{ $t('message.order_page.button_url_copy_title') }}
+                <v-icon
+                  small
+                  class="ml-1"
+                >
+                  mdi-content-copy
+                </v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
 
           <v-card-text>
+            <!-- ID -->
+            <p>ID: {{ orderId }}</p>
+
             <!-- コントラクト -->
             {{ $t('message.modal_makeOrder_headline_contract') }}:
             <a
@@ -107,6 +143,9 @@
 
             <!-- 有効期限 -->
             {{ $t('message.modal_makeOrder_headline_expiration_date') }}: {{ orderForDisplay.expirationDate }}<br>
+
+            <!-- ステータス -->
+            {{ $t('message.order_page.headline_order_status') }}: {{ orderForDisplay.status ? $t(`message.order_page.order_status.${orderForDisplay.status}`) : '-' }}<br>
             <br>
 
             <!-- Maker 側 -->
@@ -143,10 +182,10 @@
                       </a>
                       <v-img
                         :src="asset.image"
-                        height="80"
+                        height="100%"
                         max-width="80"
                         class="grey lighten-4 mt-1 mb-1"
-                      ></v-img>
+                      />
                     </span>
                     <span
                       v-else
@@ -191,10 +230,10 @@
                       </a>
                       <v-img
                         :src="asset.image"
-                        height="80"
+                        height="100%"
                         max-width="80"
                         class="grey lighten-4 mt-1 mb-1"
-                      ></v-img>
+                      />
                     </span>
                     <span
                       v-else
@@ -239,6 +278,7 @@ export default {
     data: () => ({
         libZeroEx: null,
         errorMessage: '',
+        orderId: '',
         order: {},
         orderForDisplay: {},
         makerAssets: [],
@@ -251,30 +291,58 @@ export default {
         completedMessage: null
     }),
     created: async function() {
-        const orderId = this.$route.params.id
-        const orderData = await firestore.getOrder(orderId)
+        this.orderId = this.$route.params.id
+        const orderData = await firestore.getOrder(this.orderId)
         this.makerAssets = orderData.makerAssets
         this.takerAssets = orderData.takerAssets
         this.order = orderData.order
         this.orderForDisplay = this.translateOrder(this.order)
+        this.orderForDisplay.status = orderData.status
         console.log('order', this.order)
+
+        if (!window.ethereum && !window.web3) {
+          return
+        }
 
         if (window.ethereum) {
           await window.ethereum.enable()
-          // const provider = new MetamaskSubprovider(window.ethereum)
-          const web3 = new Web3(window.ethereum)
-          this.myAddress = (await web3.eth.getAccounts())[0] || ''
-          console.log('myAddress', this.myAddress)
-          this.isMaker = this.myAddress.toLowerCase() === this.order.makerAddress
-          this.isTaker = this.myAddress.toLowerCase() === this.order.takerAddress
+          this.provider = window.ethereum
         } else if (window.web3) {
-          const web3 = new Web3(window.web3.currentProvider)
-          this.myAddress = (await window.web3.eth.getAccounts())[0] || ''
-          this.isMaker = this.myAddress.toLowerCase() === this.order.makerAddress
-          this.isTaker = this.myAddress.toLowerCase() === this.order.takerAddress
+          this.provider = window.web3.currentProvider
         }
+        const web3 = new Web3(this.provider)
+        this.myAddress = (await web3.eth.getAccounts())[0] || ''
+        console.log('myAddress', this.myAddress)
+        this.isMaker = this.myAddress.toLowerCase() === this.order.makerAddress
+        this.isTaker = this.myAddress.toLowerCase() === this.order.takerAddress
+
+        this.libZeroEx = new LibZeroEx(new MetamaskSubprovider(this.provider))
+
+        await this.checkAndUpdateOrderStatus()
     },
     methods: {
+        async copyUrl() {
+            await navigator.clipboard.writeText(location.href)
+            alert(this.$t('message.order_page.url_copy_done'))
+        },
+        async checkAndUpdateOrderStatus() {
+            const orderInfo = await this.libZeroEx.getOrderInfo(this.order)
+            console.log('orderInfo', orderInfo)
+            const orderStatusLabels = {
+              0: 'INVALID',                     // Default value
+              1: 'INVALID_MAKER_ASSET_AMOUNT',  // Order does not have a valid maker asset amount
+              2: 'INVALID_TAKER_ASSET_AMOUNT',  // Order does not have a valid taker asset amount
+              3: 'FILLABLE',                    // Order is fillable
+              4: 'EXPIRED',                     // Order has already expired
+              5: 'FULLY_FILLED',                // Order is fully filled
+              6: 'CANCELLED'                    // Order has been cancelled
+            }
+            const status = orderStatusLabels[orderInfo.orderStatus]
+            if (this.orderForDisplay.status !== status) {
+              this.orderForDisplay.status = status
+              await firestore.updateOrder(this.orderId, { status })
+            }            
+        },
         getAssetFromCache(contractAddress, tokenId) {
             return this.makerAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||
                 this.takerAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId)
@@ -341,17 +409,6 @@ export default {
                 this.errorMessage = null
                 this.dialog = true
 
-                if (!this.libZeroEx) {
-                    if (window.ethereum) {
-                      await window.ethereum.enable()
-                      const provider = new MetamaskSubprovider(window.ethereum)
-                      this.libZeroEx = new LibZeroEx(provider)
-                    } else {
-                      const provider = new MetamaskSubprovider(window.web3.currentProvider)
-                      this.libZeroEx = new LibZeroEx(provider)
-                    }
-                }
-
                 const contractAddressCache = {}
                 for (const asset of this.orderForDisplay.takerAssets) {
                     if (asset.tokenStandard === 'ERC721') {
@@ -381,7 +438,7 @@ export default {
 
             } catch (e) {
                 console.log(e)
-                this.resetMordal()
+                this.resetModal()
                 this.errorMessage = e.message
             }
         },
@@ -406,11 +463,16 @@ export default {
                 signature: normalizedOrder.signature
             }
         },
-        resetMordal() {
+        resetModal() {
             this.waitingApprovalMessage = null
             this.waitingSigningMessage = null
             this.completedMessage = null
         },
+        async fillOrderCompleted() {
+            this.dialog = false
+            this.resetModal()
+            await this.checkAndUpdateOrderStatus()
+        }
     }
 }
 </script>
