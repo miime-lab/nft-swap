@@ -1,21 +1,18 @@
 <template>
   <v-app>
-    <v-card
-      color="cyan lighten-1"
+    <v-app-bar
+      app
+      dense
       dark
+      color="cyan lighten-1"
     >
-      <v-card-title class="text-center justify-center py-6">
-        <h2
-          class="font-weight-bold display-2"
-        >
-          {{ $t("message.serviceName") }}
-        </h2>
-      </v-card-title>
+      <v-toolbar-title><b>{{ $t("message.serviceName") }}</b></v-toolbar-title>
+    </v-app-bar>
+    <!--
       <v-tabs
         background-color="transparent"
         dark
         grow
-        icons-and-text
       >
         <v-tab
           to="/"
@@ -29,8 +26,7 @@
         >
           {{ $t("message.tab_task") }}
         </v-tab>
-      </v-tabs>
-    </v-card>
+      </v-tabs> -->
 
     <router-view />
 

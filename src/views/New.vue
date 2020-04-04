@@ -1,7 +1,5 @@
 <template>
-  <v-container
-    class="fill-height"
-  >
+  <v-container class="mt-7">
     <v-row
       justify="center"
       class="ml-0"
