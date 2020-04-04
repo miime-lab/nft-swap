@@ -314,11 +314,23 @@
 
           <v-card-text>{{ completedMessage }}</v-card-text>
 
-          <v-card-text>http://localhost:8080/order/{{ orderId }}</v-card-text>
+          <v-card-text>
+            <a :href="'https://nftswap.tokyo/order/' + this.orderId">
+              https://nftswap.tokyo/order/{{ orderId }}
+            </a>
+          </v-card-text>
 
           <v-card-actions>
             <v-spacer />
             <v-btn
+              color="green darken-1"
+              text
+              @click="moveToOrderPage(orderId)"
+            >
+              {{ $t("message.modal_completed_move_to_order_page") }}
+            </v-btn>
+
+            <!-- <v-btn
               color="green darken-1"
               text
               @click="moveToNewPage"
@@ -331,7 +343,7 @@
               @click="moveToTaskPage"
             >
               {{ $t("message.modal_completed_move_to_task_page") }}
-            </v-btn>
+            </v-btn> -->
           </v-card-actions>
         </v-card>
 
@@ -352,12 +364,12 @@
               :href="orderForDisplay.exchangeLink"
               target="_blank"
             >
-              {{ this.orderForDisplay.exchangeName }}
+              {{ orderForDisplay.exchangeName }}
             </a>
             <br>
 
             <!-- 有効期限 -->
-            {{ $t('message.modal_makeOrder_headline_expiration_date') }}: {{ this.orderForDisplay.expirationDate }}<br>
+            {{ $t('message.modal_makeOrder_headline_expiration_date') }}: {{ orderForDisplay.expirationDate }}<br>
             <br>
 
             <!-- 送付側 -->
@@ -371,7 +383,7 @@
                   :href="orderForDisplay.makerLink"
                   target="_blank"
                 >
-                  {{ this.orderForDisplay.makerAddress }}
+                  {{ orderForDisplay.makerAddress }}
                 </a>
               </li>
               <li>
@@ -392,6 +404,12 @@
                       >
                         {{ asset.name }}
                       </a>
+                      <v-img
+                        :src="asset.image"
+                        height="80"
+                        max-width="80"
+                        class="grey lighten-4 mt-1 mb-1"
+                      ></v-img>
                     </span>
                     <span
                       v-else
@@ -400,7 +418,7 @@
                     </span>
                   </li>
                 </ul>
-              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.makerFee ? this.orderForDisplay.makerFee.toString() : '' }}</li>
+              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ orderForDisplay.makerFee ? orderForDisplay.makerFee.toString() : '' }}</li>
             </ul>
             <br>
 
@@ -415,7 +433,7 @@
                   :href="orderForDisplay.takerLink"
                   target="_blank"
                 >
-                  {{ this.orderForDisplay.takerAddress }}
+                  {{ orderForDisplay.takerAddress }}
                 </a>
               </li>
               <li>
@@ -434,6 +452,12 @@
                       >
                         {{ asset.name }}
                       </a>
+                      <v-img
+                        :src="asset.image"
+                        height="80"
+                        max-width="80"
+                        class="grey lighten-4 mt-1 mb-1"
+                      ></v-img>
                     </span>
                     <span
                       v-else
@@ -442,7 +466,7 @@
                     </span>
                   </li>
                 </ul>
-              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ this.orderForDisplay.takerFee ? this.orderForDisplay.takerFee.toString() : '' }}</li>
+              </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ orderForDisplay.takerFee ? orderForDisplay.takerFee.toString() : '' }}</li>
             </ul>
           </v-card-text>
 
@@ -469,7 +493,7 @@
   </v-container>
 </template>
 
-<script lang="js">
+<script>
 /* eslint-disable */
 import opensea from '../plugins/opensea'
 import firestore from '../plugins/firestore'
@@ -501,8 +525,8 @@ export default {
         orderForDisplay: {},
         orderId: null,
         errorMessage: null,
-        waitingApprovalMessage: null,
         waitingSigningMessage: null,
+        waitingApprovalMessage: null,
         completedMessage: null
     }),
     created: async function() {
@@ -510,6 +534,7 @@ export default {
           try {
             return navigator.browserLanguage || navigator.language || navigator.userLanguage
           } catch(e) {
+            console.log(e)
             return undefined;
           }
         }
@@ -668,9 +693,14 @@ export default {
                 this.errorMessage = null
 
                 if (!this.libZeroEx) {
-                    await window.ethereum.enable()
-                    const provider = new MetamaskSubprovider(window.ethereum)
-                    this.libZeroEx = new LibZeroEx(provider)
+                    if (window.ethereum) {
+                      await window.ethereum.enable()
+                      const provider = new MetamaskSubprovider(window.ethereum)
+                      this.libZeroEx = new LibZeroEx(provider)
+                    } else {
+                      const provider = new MetamaskSubprovider(window.web3.currentProvider)
+                      this.libZeroEx = new LibZeroEx(provider)
+                    }
                 }
 
                 if (!this.existAssetInputs()) {
@@ -686,6 +716,7 @@ export default {
                 this.orderForDisplay = this.translateOrder(this.order)
                 console.log('orderForDisplay:', this.orderForDisplay)
             } catch (e) {
+                console.log(e)
                 this.resetMordal()
                 this.errorMessage = e.message
             }
@@ -719,23 +750,24 @@ export default {
                 console.log('signedOrder', signedOrder)
                 const normalizedOrder = this.normalizeOrder(signedOrder)
 
-                const nowDate = moment().format()
+                const nowDate = new Date().getTime()
                 const docId = await firestore.addOrder({
                   order: normalizedOrder,
                   sellerAddress: this.order.makerAddress,
                   buyerAddress: this.order.takerAddress,
                   makerAssets: this.orderForDisplay.makerAssets,
                   takerAssets: this.orderForDisplay.takerAssets,
-                  ceratedAt: nowDate,
+                  createdAt: nowDate,
                   updatedAt: nowDate
                 })
                 console.log('docId', docId)
 
                 this.orderId = docId
-                this.completedMessage = this.$t('message.modal_completed_message')
                 this.waitingSigningMessage = null
+                this.completedMessage = this.$t('message.modal_completed_message')
 
             } catch (e) {
+                console.log(e)
                 this.resetMordal()
                 this.errorMessage = e.message
             }
@@ -749,6 +781,11 @@ export default {
             result.makerFee = order.makerFee.toString()
             result.takerFee = order.takerFee.toString()
             return result
+        },
+        moveToOrderPage(id) {
+            console.log('id', id)
+            this.dialog = false
+            this.$router.push({ name: 'Order', params: { id }})
         },
         moveToNewPage() {
             this.dialog = false

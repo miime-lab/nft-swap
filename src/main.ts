@@ -27,6 +27,7 @@ const messages = {
             modal_error_no_asset: "Please input at least one asset for both",
             modal_makeOrder_title: "Create Order",
             modal_completed_message: "Order creation is complete. Please share the following URL to your trading partner.",
+            modal_completed_move_to_order_page: "Move to Order page",
             modal_completed_move_to_new_page: "Move to New page",
             modal_completed_move_to_task_page: "Move to Task page",
             modal_makeOrder_title_approve:
@@ -43,7 +44,17 @@ const messages = {
             modal_makeOrder_create: "Create",
             modal_makeOrder_cancel: "Cancel",
             error_invalid_asset_url: "Please input OpenSea or miime URL",
-            error_already_input_asset: "The asset is already input."
+            error_already_input_asset: "The asset is already input.",
+            order_page: {
+                card_title_orderDetail: "Order Detail",
+                headline_sending_side: "Sending",
+                headline_receiving_side: "Receiving",
+                headline_maker_side: "Maker Side",
+                headline_taker_side: "Taker Side",
+                modal_sending_title: "Fill Order",
+                modal_waiting_send_tx: "Waiting for order filling transaction to confirmed.",
+                modal_completed_message: "Transaction Sending Completed"
+            }
         }
     },
     ja: {
@@ -64,6 +75,7 @@ const messages = {
             modal_completed_title: "オーダー作成完了",
             modal_waiting_signing_message: "オーダーに署名してください。",
             modal_completed_message: "オーダーの作成が完了しました。次の URL を取引相手に共有してください。",
+            modal_completed_move_to_order_page: "オーダーを確認",
             modal_completed_move_to_new_page: "新しくオーダーを作成",
             modal_completed_move_to_task_page: "自分のオーダーを確認",
             modal_error_no_asset: "送信/受信それぞれ1つ以上アセットを入力してください",
@@ -81,7 +93,17 @@ const messages = {
             modal_makeOrder_create: "作成",
             modal_makeOrder_cancel: "キャンセル",
             error_invalid_asset_url: "アセット詳細ページの URL を入力してください",
-            error_already_input_asset: "このアセットはすでに入力済みです"
+            error_already_input_asset: "このアセットはすでに入力済みです",
+            order_page: {
+                card_title_orderDetail: "オーダーの詳細",
+                headline_sending_side: "送付",
+                headline_receiving_side: "受取",
+                headline_maker_side: "メイカー側",
+                headline_taker_side: "テイカー側",
+                modal_sending_title: "オーダーの実行",
+                modal_waiting_send_tx: "オーダー実行のトランザクションが完了するのを待っています。",
+                modal_completed_message: "トランザクション送信完了"
+            }
         }
     }
 }
