@@ -9,7 +9,6 @@
       <v-col
         cols="12"
         sm="8"
-        md="4"
       >
         <v-dialog
           v-model="dialog"
