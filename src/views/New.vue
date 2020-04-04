@@ -110,7 +110,7 @@
               dark
               flat
             >
-              <v-toolbar-title class="subtitle-1">
+              <v-toolbar-title class="subtitle-1 ma-0 pa-0">
                 {{ $t("message.card_title_sending_weth") }}
               </v-toolbar-title>
             </v-toolbar>
@@ -126,7 +126,7 @@
                   placeholder="0"
                   name="amount"
                   type="text"
-                  class="subtitle-1"
+                  class="subtitle-1 ma-0 pa-0"
                 />
               </v-form>
             </v-card-text>
