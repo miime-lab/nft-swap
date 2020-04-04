@@ -37,7 +37,7 @@
                 cols="2"
                 class="d-flex justify-center align-center pl-4"
               >
-                <v-icon @click="close(asset)">
+                <v-icon @click="removeSendingAsset(asset)">
                   mdi-close
                 </v-icon>
               </v-col>
@@ -244,7 +244,7 @@
                   placeholder="0"
                   name="amount"
                   type="text"
-                  class="subtitle-1"
+                  class="subtitle-1 ma-0"
                 />
               </v-form>
             </v-card-text>
@@ -596,6 +596,15 @@ export default {
         }
     },
     methods: {
+        removeSendingAsset(dic) {
+          this.sendingAssets = this.sendingAssets.filter(elem=>
+              !(elem.id === dic.id && elem.url===dic.url && elem.image===dic.image)          )
+          if(this.sendingAssets.length<1){
+           this.sendingAssets=[
+            { id: 0, url: '', image: null }
+        ]
+          }
+        },
         async copyToClipboard(text) {
             await navigator.clipboard.writeText(text)
             alert(this.$t('message.modal_completed_clipboard_copy_done'))
