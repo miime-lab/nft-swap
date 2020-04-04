@@ -5,10 +5,12 @@
     <v-row
       align="start"
       justify="center"
+      class="mt-12 ma-0"
     >
       <v-col
         cols="12"
-        sm="8"
+        sm="10"
+        md="8"
       >
         <v-dialog
           v-model="dialog"
@@ -94,7 +96,7 @@
         <!-- オーダー詳細 -->
         <v-card
           v-if="!!order.makerAddress"
-          class="elevation-20 mb-0"
+          class="elevation-4 mb-0 pl-2"
         >
           <v-row
             class="align-center justify-space-between"
@@ -338,9 +340,9 @@ export default {
             }
             const status = orderStatusLabels[orderInfo.orderStatus]
             if (this.orderForDisplay.status !== status) {
-              this.orderForDisplay.status = status
               await firestore.updateOrder(this.orderId, { status })
-            }            
+            }
+            this.orderForDisplay.status = status
         },
         getAssetFromCache(contractAddress, tokenId) {
             return this.makerAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||
