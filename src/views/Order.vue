@@ -1,11 +1,6 @@
 <template>
-  <v-container
-    class="fill-height"
-  >
-    <v-row
-      align="start"
-      justify="center"
-    >
+  <v-container class="mt-7">
+    <v-row>
       <v-col
         cols="12"
         sm="8"
@@ -340,7 +335,7 @@ export default {
             if (this.orderForDisplay.status !== status) {
               this.orderForDisplay.status = status
               await firestore.updateOrder(this.orderId, { status })
-            }            
+            }
         },
         getAssetFromCache(contractAddress, tokenId) {
             return this.makerAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||

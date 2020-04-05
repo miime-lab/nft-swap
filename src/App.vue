@@ -1,33 +1,31 @@
 <template>
   <v-app>
-    <v-card
-      color="cyan lighten-1"
+    <v-app-bar
+      app
+      dense
       dark
+      color="cyan lighten-1"
     >
-      <v-card-title
-        class="text-center
-        justify-center py-6"
+      <v-toolbar-title @click="$router.push('/')">
+        <b>{{ $t("message.serviceName") }}</b>
+      </v-toolbar-title>
+      <v-spacer />
+      <div
+        class="mr-2"
+        @click="$router.push('/task')"
       >
-        <h2
-          class="font-weight-bold display-2"
-        >
-          <router-link
-            to="/"
-            class="routerLink white--text"
-          >
-            {{ $t("message.serviceName") }}
-          </router-link>
-        </h2>
-      </v-card-title>
-
-      <!-- <v-tabs
-        v-if="$router.currentRoute.path === '/' || $router.currentRoute.path === '/task'" -->
+        <v-icon>mdi-check-outline</v-icon>
+      </div>
+      <div @click="$router.push('/history')">
+        <v-icon>mdi-dots-vertical</v-icon>
+      </div>
+    </v-app-bar>
+    <!--
       <v-tabs
         v-if="false"
         background-color="transparent"
         dark
         grow
-        icons-and-text
       >
         <v-tab
           to="/"
@@ -41,8 +39,7 @@
         >
           {{ $t("message.tab_task") }}
         </v-tab>
-      </v-tabs>
-    </v-card>
+      </v-tabs> -->
 
     <router-view />
 

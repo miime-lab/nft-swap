@@ -1,7 +1,5 @@
 <template>
-  <v-container
-    class="fill-height"
-  >
+  <v-container class="mt-7">
     <v-row
       justify="center"
       class="ml-0"
@@ -17,7 +15,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-4 mt-2 mb-0 justify-center"
+            class="elevation-4 mt-2 mb-0 pa-0 justify-center"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -31,43 +29,54 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-row justify="center">
-              <v-img
-                v-if="!!asset.image"
-                class="align-center justify-center"
-                :src="asset.image"
-                height="100%"
-                max-width="200"
-              />
+            <v-row
+              v-if="!!asset.name"
+              justify="center"
+            >
+              <v-col
+                cols="2"
+                class="d-flex justify-center align-center pl-4"
+              >
+                <v-icon @click="removeSendingAsset(asset)">
+                  mdi-close
+                </v-icon>
+              </v-col>
+              <v-col cols="6">
+                <v-card-title
+                  v-if="!!asset.name"
+                  class="subtitle-1 ma-0 pa-0"
+                >
+                  {{ asset.name }}
+                </v-card-title>
+                <v-card-subtitle
+                  v-if="!!asset.contractName"
+                  class="caption ma-0 pa-0"
+                >
+                  {{ asset.contractName }} #{{ asset.tokenId }}
+                </v-card-subtitle>
+              </v-col>
+              <v-col cols="4">
+                <v-img
+                  v-if="!!asset.image"
+                  class="align-center justify-center pa-0 ma-0"
+                  :src="asset.image"
+                  height="100px"
+                  max-width="100px"
+                />
+              </v-col>
             </v-row>
 
-            <v-card-title
-              v-if="!!asset.name"
-              class="subtitle-1"
-            >
-              {{ asset.name }}
-            </v-card-title>
-            <v-card-subtitle
-              v-if="!!asset.contractName"
-            >
-              {{ asset.contractName }} #{{ asset.tokenId }}
-            </v-card-subtitle>
-
-            <v-card-text
+            <v-text-field
               v-if="!asset.image"
-            >
-              <v-form>
-                <v-text-field
-                  ref="asset.url"
-                  v-model="asset.url"
-                  :label="$t('message.card_input_label_url')"
-                  :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id)]"
-                  :error-messages="asset.errorMessages"
-                  name="url"
-                  type="text"
-                />
-              </v-form>
-            </v-card-text>
+              ref="asset.url"
+              v-model="asset.url"
+              :label="$t('message.card_input_label_url')"
+              :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id)]"
+              :error-messages="asset.errorMessages"
+              name="url"
+              type="text"
+              class="mx-3"
+            />
 
             <v-fab-transition
               v-if="!!asset.image && asset.id === sendingAssets.length - 1"
@@ -96,26 +105,22 @@
               dark
               flat
             >
-              <v-toolbar-title class="subtitle-1">
+              <v-toolbar-title class="subtitle-1 ma-0 pa-0">
                 {{ $t("message.card_title_sending_weth") }}
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-card-text>
-              <v-form>
-                <v-text-field
-                  ref="sendingCurrencies[0].amount"
-                  v-model="sendingCurrencies[0].amount"
-                  :rules="[isNumber]"
-                  suffix="WETH"
-                  :error-messages="sendingCurrencies[0].errorMessages"
-                  placeholder="0"
-                  name="amount"
-                  type="text"
-                  class="subtitle-1"
-                />
-              </v-form>
-            </v-card-text>
+            <v-text-field
+              ref="sendingCurrencies[0].amount"
+              v-model="sendingCurrencies[0].amount"
+              :rules="[isNumber]"
+              suffix="WETH"
+              :error-messages="sendingCurrencies[0].errorMessages"
+              placeholder="0"
+              name="amount"
+              type="text"
+              class="subtitle-1 mx-3"
+            />
           </v-card>
         </v-item-group>
 
@@ -124,10 +129,9 @@
           justify="center"
           class="mt-6 mb-5"
         >
-          <img
-            src="@/assets/swap-allow.png"
-            height="48px"
-          >
+          <v-icon size="50">
+mdi-arrow-up-down-bold
+</v-icon>
         </div>
 
         <v-item-group>
@@ -150,43 +154,53 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-row justify="center">
-              <v-img
-                v-if="!!asset.image"
-                class="align-center justify-center"
-                :src="asset.image"
-                height="100%"
-                max-width="200"
-              />
-            </v-row>
-
-            <v-card-title
+            <v-row
               v-if="!!asset.name"
+              justify="center"
             >
-              {{ asset.name }}
-            </v-card-title>
-            <v-card-subtitle
-              v-if="!!asset.contractName"
-            >
-              {{ asset.contractName }} #{{ asset.tokenId }}
-            </v-card-subtitle>
-
-            <v-card-text
-              v-if="!asset.image"
-            >
-              <v-form>
-                <v-text-field
-                  ref="asset.url"
-                  v-model="asset.url"
-                  :label="$t('message.card_input_label_url')"
-                  :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id)]"
-                  :error-messages="asset.errorMessages"
-                  name="url"
-                  type="text"
+              <v-col
+                cols="2"
+                class="d-flex justify-center align-center pl-4"
+              >
+                <v-icon @click="removeSendingAsset(asset)">
+                  mdi-close
+                </v-icon>
+              </v-col>
+              <v-col cols="6">
+                <v-card-title
+                  v-if="!!asset.name"
+                  class="subtitle-1 ma-0 pa-0"
+                >
+                  {{ asset.name }}
+                </v-card-title>
+                <v-card-subtitle
+                  v-if="!!asset.contractName"
+                  class="caption ma-0 pa-0"
+                >
+                  {{ asset.contractName }} #{{ asset.tokenId }}
+                </v-card-subtitle>
+              </v-col>
+              <v-col cols="4">
+                <v-img
+                  v-if="!!asset.image"
+                  class="align-center justify-center pa-0 ma-0"
+                  :src="asset.image"
+                  height="100px"
+                  max-width="100px"
                 />
-              </v-form>
-            </v-card-text>
-
+              </v-col>
+            </v-row>
+            <v-text-field
+              v-if="!asset.image"
+              ref="asset.url"
+              v-model="asset.url"
+              class="mx-3"
+              :label="$t('message.card_input_label_url')"
+              :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id)]"
+              :error-messages="asset.errorMessages"
+              name="url"
+              type="text"
+            />
             <v-fab-transition
               v-if="!!asset.image && asset.id === receivingAssets.length - 1"
             >
@@ -219,21 +233,17 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-card-text>
-              <v-form>
-                <v-text-field
-                  ref="receivingCurrencies[0].amount"
-                  v-model="receivingCurrencies[0].amount"
-                  :rules="[isNumber]"
-                  suffix="WETH"
-                  :error-messages="receivingCurrencies[0].errorMessages"
-                  placeholder="0"
-                  name="amount"
-                  type="text"
-                  class="subtitle-1"
-                />
-              </v-form>
-            </v-card-text>
+            <v-text-field
+              ref="receivingCurrencies[0].amount"
+              v-model="receivingCurrencies[0].amount"
+              :rules="[isNumber]"
+              suffix="WETH"
+              :error-messages="receivingCurrencies[0].errorMessages"
+              placeholder="0"
+              name="amount"
+              type="text"
+              class="subtitle-1 mx-3"
+            />
           </v-card>
         </v-item-group>
       </v-col>
@@ -582,6 +592,15 @@ export default {
         }
     },
     methods: {
+        removeSendingAsset(dic) {
+          this.sendingAssets = this.sendingAssets.filter(elem=>
+              !(elem.id === dic.id && elem.url===dic.url && elem.image===dic.image)          )
+          if(this.sendingAssets.length<1){
+           this.sendingAssets=[
+            { id: 0, url: '', image: null }
+        ]
+          }
+        },
         async copyToClipboard(text) {
             await navigator.clipboard.writeText(text)
             alert(this.$t('message.modal_completed_clipboard_copy_done'))
@@ -791,7 +810,7 @@ export default {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
                             await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId)
                         }
-                    } else if (asset.tokenStandard === 'ERC20') {                        
+                    } else if (asset.tokenStandard === 'ERC20') {
                         // 残高チェック
                         const amount = new BigNumber(ethers.utils.parseEther(asset.amount.toString()).toString())
                         const balance = await this.libZeroEx.balanceOf(asset.contractAddress, this.order.makerAddress)

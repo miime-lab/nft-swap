@@ -1,11 +1,6 @@
 <template>
-  <v-container
-    class="fill-height"
-  >
-    <v-row
-      align="start"
-      justify="center"
-    >
+  <v-container class="mt-7">
+    <v-row>
       <v-col
         cols="12"
         sm="8"
@@ -15,7 +10,8 @@
           <v-card
             v-for="order of orders"
             :key="order.id"
-            class="elevation-20 mb-0"
+            class="elevation-20 ma-2 pa-1"
+            @click="$router.push(`/order/${order.id}`)"
           >
             <v-img
               v-if="!!order.makerAssetImage"
@@ -34,20 +30,8 @@
             </v-card-subtitle>
 
             <v-card-text>
-              Dummy
+              {{ order.id }}
             </v-card-text>
-
-            <v-divider />
-
-            <v-card-actions>
-              <v-btn
-                color="cyan lighten-2"
-                text
-                @click="fillOrder"
-              >
-                {{ $t("message.button_fillOrder") }}
-              </v-btn>
-            </v-card-actions>
           </v-card>
         </v-item-group>
       </v-col>
@@ -56,6 +40,7 @@
 </template>
 
 <script>
+import firestore from "../plugins/firestore"
 export default {
     name: 'Task',
     data: () => ({
@@ -64,6 +49,10 @@ export default {
             {}
         ]
     }),
+    created: async function(){
+        this.orders = await firestore.getOrderByTakerAddress("0x6b3c92aadb19750f3dfaad31974d8b3c7e7a171e", 50, undefined)
+        this.orders = this.orders.dataArray
+    },
     methods: {
         fillOrder () {
         }
