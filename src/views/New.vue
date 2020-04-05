@@ -636,7 +636,6 @@ export default {
         if (locale) {
             moment.locale(locale)
         }
-        console.log(this.state.myAddress)
     },
     methods: {
         removeSendingAsset(asset) {
@@ -677,7 +676,11 @@ export default {
                 asset.loading = 'cyan lighten-2'
                 opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
                     console.log('assetInfo', assetInfo)
-                    if (assetInfo.asset_contract.schema_name !== 'ERC721') {
+                    if(assetInfo.owner.address!==this.state.myAddress){
+                        this.dialog = true
+                        this.errorMessage = this.$t('message.error_not_my_token')
+                        asset.url = ''
+                    }else if (assetInfo.asset_contract.schema_name !== 'ERC721') {
                         this.dialog = true
                         this.errorMessage = this.$t('message.error_unsupported_token_standard')
                         asset.url = ''

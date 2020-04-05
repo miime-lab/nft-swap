@@ -55,6 +55,7 @@ const messages = {
             modal_makeOrder_cancel: "Cancel",
             error_invalid_asset_url: "Please input OpenSea or miime URL",
             error_unsupported_token_standard: "Sorry, this token standard is not supported",
+            error_not_my_token: "You don't own this token.",
             error_already_input_asset: "The asset is already input.",
             order_page: {
                 order_status: {
@@ -126,6 +127,7 @@ const messages = {
             modal_makeOrder_create: "作成",
             modal_makeOrder_cancel: "キャンセル",
             error_invalid_asset_url: "アイテム詳細ページの URL を入力してください",
+            error_not_my_token: "あなたはこのトークンの所有者ではありません。",
             error_unsupported_token_standard: "申し訳ありませんがこのトークン規格には対応していません",
             error_already_input_asset: "このアイテムはすでに入力済みです",
             order_page: {
