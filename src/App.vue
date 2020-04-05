@@ -10,9 +10,14 @@
         <b>{{ $t("message.serviceName") }}</b>
       </v-toolbar-title>
       <v-spacer />
-      <v-icon>mdi-task</v-icon>
-      <div @click="$router.push('/task')">
-        {{ $t("message.tab_task") }}
+      <div
+        class="mr-2"
+        @click="$router.push('/task')"
+      >
+        <v-icon>mdi-check-outline</v-icon>
+      </div>
+      <div @click="$router.push('/history')">
+        <v-icon>mdi-dots-vertical</v-icon>
       </div>
     </v-app-bar>
     <!--
