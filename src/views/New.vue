@@ -87,7 +87,7 @@
                   ref="asset.url"
                   v-model="asset.url"
                   :label="$t('message.card_input_label_url')"
-                  :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id)]"
+                  :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id,'maker')]"
                   :error-messages="asset.errorMessages"
                   name="url"
                   type="text"
@@ -234,7 +234,7 @@
                   ref="asset.url"
                   v-model="asset.url"
                   :label="$t('message.card_input_label_url')"
-                  :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id)]"
+                  :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id,'taker')]"
                   :error-messages="asset.errorMessages"
                   name="url"
                   type="text"
@@ -660,7 +660,7 @@ export default {
             await navigator.clipboard.writeText(text)
             alert(this.$t('message.modal_completed_clipboard_copy_done'))
         },
-        loadAssetInfoFromUrl(dataName, id) {
+        loadAssetInfoFromUrl(dataName, id, side) {
             const asset = this[dataName][id]
             if (!asset.url) {
                 return true
@@ -676,7 +676,7 @@ export default {
                 asset.loading = 'cyan lighten-2'
                 opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
                     console.log('assetInfo', assetInfo)
-                    if(assetInfo.owner.address!==this.state.myAddress){
+                    if(side==="maker" && assetInfo.owner.address!==this.state.myAddress){
                         this.dialog = true
                         this.errorMessage = this.$t('message.error_not_my_token')
                         asset.url = ''
