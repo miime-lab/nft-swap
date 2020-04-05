@@ -485,10 +485,14 @@ export default {
                 console.log('fillOrder')
                 this.errorMessage = null
                 this.dialog = true
-
                 const contractAddressCache = {}
                 for (const asset of this.orderForDisplay.takerAssets) {
                     if (asset.tokenStandard === 'ERC721') {
+                        const currentOwner = await this.libZeroEx.ownerOf(asset.contractAddress, BigNumber(asset.tokenId))
+                        if (asset.ownerAddress!==currentOwner){
+                            this.errorMessage = this.$t('message.modal_error_owner_changed')
+                            return
+                        }
                         const isApproved = await this.libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
                         if (!isApproved) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')

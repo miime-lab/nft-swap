@@ -16,21 +16,11 @@
         >
           {{ $t('message.tab_task') }}
         </v-toolbar-title>
-
-        <v-card
+        <OrderCard
           v-for="order of orders"
           :key="order.id"
-          class="elevation-4 mb-2 pa-0 justify-center"
-          @click="$router.push(`/order/${order.id}`)"
-        >
-          <v-card-title class="subtitle-1">
-            {{ $t('message.headline_order_id') + ': ' + order.id }}
-          </v-card-title>
-          <v-card-text>
-            {{ $t('message.headline_updated_at') + ': ' + getDateStr(order.updatedAt) }}<br>
-            {{ $t('message.headline_status') + ': ' + (order.status ? $t(`message.order_page.order_status.${order.status}`) : '-') }}<br>
-          </v-card-text>
-        </v-card>
+          :order="order"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -40,8 +30,12 @@
 import firestore from '../plugins/firestore'
 import moment from 'moment'
 import Web3 from 'web3'
+import OrderCard from '../components/OrderCard'
 export default {
     name: 'Task',
+    components:{
+        OrderCard,
+    },
     data: () => ({
         errorMessages: '',
         myAddress: null,
@@ -79,10 +73,5 @@ export default {
         this.orders = this.orders.dataArray
         console.log(this.orders)
     },
-    methods: {
-        getDateStr (timesatampInMilliSec) {
-            return moment(timesatampInMilliSec).format()
-        }
-    }
 }
 </script>
