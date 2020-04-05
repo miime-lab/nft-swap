@@ -3,12 +3,13 @@
     <v-row
       align="start"
       justify="center"
-      class="ml-2 mr-2"
+      class="ml-2 mr-2 mt-0 mb-0"
     >
       <v-col
         cols="12"
         sm="10"
         md="8"
+        class="pa-0"
       >
         <v-dialog
           v-model="dialog"
@@ -112,14 +113,16 @@
         <!-- オーダー詳細 -->
         <v-card
           v-if="!!order.makerAddress"
-          class="elevation-4 mb-0 pl-2"
+          class="elevation-4 pl-2"
         >
           <v-row
-            class="align-center justify-space-between"
+            class="align-center justify-space-between ml-0"
           >
-            <v-col>
+            <v-col
+              class="pa-0"
+            >
               <v-card-title
-                color="cyan lighten-2"
+                color="cyan lighten-2 ml-8 pb-0"
                 dark
                 flat
               >
@@ -162,7 +165,7 @@
             {{ $t('message.modal_makeOrder_headline_expiration_date') }}: {{ orderForDisplay.expirationDate }}<br>
 
             <!-- ステータス -->
-            {{ $t('message.order_page.headline_order_status') }}: {{ orderForDisplay.status ? $t(`message.order_page.order_status.${orderForDisplay.status}`) : '-' }}<br>
+            {{ $t('message.order_page.headline_order_status') }}: {{ getStatusLabel(orderForDisplay.status) }}<br>
             <br>
 
             <!-- Maker 側 -->
@@ -208,6 +211,12 @@
                       v-else
                     >
                       {{ asset.amount }} {{ asset.symbol }}
+                      <span
+                        v-if="isMaker"
+                        class="blue--text"
+                      >
+                        ({{ $t('message.headline_balance') }}: {{ roundEth(wethBalance) }} WETH, {{ roundEth(ethBalance) }} ETH)
+                      </span>
                     </span>
                   </li>
                 </ul>
@@ -256,7 +265,12 @@
                       v-else
                     >
                       {{ asset.amount }} {{ asset.symbol }}
-                      <span class="blue--text">({{ $t('message.headline_balance') }}: {{ roundEth(wethBalance) }} WETH, {{ roundEth(ethBalance) }} ETH)</span>
+                      <span
+                        v-if="isTaker"
+                        class="blue--text"
+                      >
+                        ({{ $t('message.headline_balance') }}: {{ roundEth(wethBalance) }} WETH, {{ roundEth(ethBalance) }} ETH)
+                      </span>
                     </span>
                   </li>
                 </ul>
@@ -368,6 +382,9 @@ export default {
             alert(this.$t('message.order_page.url_copy_done'))
         },
         roundEth(ethValue) {
+          if (!ethValue) {
+            return ''
+          }
           const [ integerPart, decimalPart ] = ethValue.split('.')
           if (!decimalPart) {
             return ethValue
@@ -397,6 +414,9 @@ export default {
               await firestore.updateOrder(this.orderId, { status, updatedAt })
             }
             this.orderForDisplay.status = status
+        },
+        getStatusLabel(status) {
+          return this.$t(`message.order_page.order_status.${status}`) || '-'
         },
         getAssetFromCache(contractAddress, tokenId) {
             return this.makerAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||
