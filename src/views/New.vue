@@ -611,6 +611,7 @@
 import opensea from '../plugins/opensea'
 import firestore from '../plugins/firestore'
 import moment from 'moment'
+import Web3 from 'web3'
 import { ethers } from 'ethers'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
@@ -620,6 +621,7 @@ export default {
     name: 'New',
     data: () => ({
         libZeroEx: null,
+        gasPrice: null,
         sendingAssets: [
             { id: 0, url: '', image: null }
         ],
@@ -861,13 +863,14 @@ export default {
 
                 if (!this.libZeroEx) {
                     if (window.ethereum) {
-                      await window.ethereum.enable()
-                      const provider = new MetamaskSubprovider(window.ethereum)
-                      this.libZeroEx = new LibZeroEx(provider)
-                    } else {
-                      const provider = new MetamaskSubprovider(window.web3.currentProvider)
-                      this.libZeroEx = new LibZeroEx(provider)
+                        await window.ethereum.enable()
+                        this.provider = window.ethereum
+                    } else if (window.web3) {
+                        this.provider = window.web3.currentProvider
                     }
+                    const web3 = new Web3(this.provider)
+                    this.libZeroEx = new LibZeroEx(new MetamaskSubprovider(this.provider))
+                    this.gasPrice = await web3.eth.getGasPrice()
                 }
 
                 if (!this.existAssetInputs()) {
@@ -900,7 +903,7 @@ export default {
                         const isApproved = await this.libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
                         if (!isApproved) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
-                            await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId)
+                            await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId, this.gasPrice)
                         }
                     } else if (asset.tokenStandard === 'ERC20') {
                         // 残高チェック
@@ -915,7 +918,7 @@ export default {
                         const allowance = await this.libZeroEx.allowance(asset.contractAddress, this.order.makerAddress)
                         if (allowance.lt(amount)) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
-                            await this.libZeroEx.approve(asset.contractAddress, this.order.makerAddress)
+                            await this.libZeroEx.approve(asset.contractAddress, this.order.makerAddress, this.gasPrice)
                         }
                     }
                 }
