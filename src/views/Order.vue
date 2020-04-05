@@ -331,7 +331,6 @@ export default {
         this.libZeroEx = new LibZeroEx(new MetamaskSubprovider(this.provider))
 
         await this.checkAndUpdateOrderStatus()
-        console.log(1234, await this.libZeroEx.ownerOf('0xc03844f07f86ad1d90a1c4a2a8204dcf00f3a991',BigNumber(10231690)))
     },
     methods: {
         async copyUrl() {
