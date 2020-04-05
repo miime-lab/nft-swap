@@ -1,7 +1,5 @@
 <template>
-  <v-container
-    class="fill-height"
-  >
+  <v-container class="mt-7 pl-0 ma-0">
     <v-row
       justify="center"
       class="ml-0"
@@ -9,7 +7,7 @@
       <v-col
         cols="12"
         sm="8"
-        md="4"
+        md="6"
       >
         <v-item-group>
           <v-card
@@ -17,7 +15,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-4 mt-2 mb-0 justify-center"
+            class="elevation-4 mt-6 mb-0 pa-0 justify-center"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -31,27 +29,43 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-row justify="center">
-              <v-img
-                v-if="!!asset.image"
-                class="align-center justify-center"
-                :src="asset.image"
-                height="100%"
-                max-width="200"
-              />
-            </v-row>
-
-            <v-card-title
+            <v-row
               v-if="!!asset.name"
-              class="subtitle-1"
+              justify="center"
+              class="ml-1"
             >
-              {{ asset.name }}
-            </v-card-title>
-            <v-card-subtitle
-              v-if="!!asset.contractName"
-            >
-              {{ asset.contractName }} #{{ asset.tokenId }}
-            </v-card-subtitle>
+              <v-col cols="6" sm="7" md="7">
+                <v-card-title
+                  v-if="!!asset.name"
+                  class="subtitle-1 ma-0 pa-0"
+                >
+                  {{ asset.name }}
+                </v-card-title>
+                <v-card-subtitle
+                  v-if="!!asset.contractName"
+                  class="caption ma-0 pa-0"
+                >
+                  {{ asset.contractName }} #{{ asset.tokenId }}
+                </v-card-subtitle>
+              </v-col>
+              <v-col cols="4" sm="3" md="3" align="center">
+                <v-img
+                  v-if="!!asset.image"
+                  class="align-center justify-center pa-0 ma-0"
+                  :src="asset.image"
+                  height="100%"
+                  max-width="100px"
+                />
+              </v-col>
+              <v-col
+                cols="2" sm="2" md="2"
+                class="d-flex justify-center align-center pr-5"
+              >
+                <v-icon @click="removeSendingAsset(asset)">
+                  mdi-close
+                </v-icon>
+              </v-col>
+            </v-row>
 
             <v-card-text
               v-if="!asset.image"
@@ -65,6 +79,7 @@
                   :error-messages="asset.errorMessages"
                   name="url"
                   type="text"
+                  class="ma-0 pa-0"
                 />
               </v-form>
             </v-card-text>
@@ -96,7 +111,7 @@
               dark
               flat
             >
-              <v-toolbar-title class="subtitle-1">
+              <v-toolbar-title class="subtitle-1 ma-0 pa-0">
                 {{ $t("message.card_title_sending_weth") }}
               </v-toolbar-title>
             </v-toolbar>
@@ -112,7 +127,7 @@
                   placeholder="0"
                   name="amount"
                   type="text"
-                  class="subtitle-1"
+                  class="subtitle-1 ma-0 pa-0"
                 />
               </v-form>
             </v-card-text>
@@ -150,26 +165,43 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-row justify="center">
-              <v-img
-                v-if="!!asset.image"
-                class="align-center justify-center"
-                :src="asset.image"
-                height="100%"
-                max-width="200"
-              />
-            </v-row>
-
-            <v-card-title
+            <v-row
               v-if="!!asset.name"
+              justify="center"
+              class="ml-1"
             >
-              {{ asset.name }}
-            </v-card-title>
-            <v-card-subtitle
-              v-if="!!asset.contractName"
-            >
-              {{ asset.contractName }} #{{ asset.tokenId }}
-            </v-card-subtitle>
+              <v-col cols="6" sm="7" md="7">
+                <v-card-title
+                  v-if="!!asset.name"
+                  class="subtitle-1 ma-0 pa-0"
+                >
+                  {{ asset.name }}
+                </v-card-title>
+                <v-card-subtitle
+                  v-if="!!asset.contractName"
+                  class="caption ma-0 pa-0"
+                >
+                  {{ asset.contractName }} #{{ asset.tokenId }}
+                </v-card-subtitle>
+              </v-col>
+              <v-col cols="4" sm="3" md="3" align="center">
+                <v-img
+                  v-if="!!asset.image"
+                  class="align-center justify-center pa-0 ma-0"
+                  :src="asset.image"
+                  height="100%"
+                  max-width="100px"
+                />
+              </v-col>
+              <v-col
+                cols="2" sm="2" md="2"
+                class="d-flex justify-center align-center pr-5"
+              >
+                <v-icon @click="removeReceivingAsset(asset)">
+                  mdi-close
+                </v-icon>
+              </v-col>
+            </v-row>
 
             <v-card-text
               v-if="!asset.image"
@@ -230,7 +262,7 @@
                   placeholder="0"
                   name="amount"
                   type="text"
-                  class="subtitle-1"
+                  class="subtitle-1 ma-0"
                 />
               </v-form>
             </v-card-text>
@@ -582,6 +614,24 @@ export default {
         }
     },
     methods: {
+        removeSendingAsset(asset) {
+            this.sendingAssets = this.sendingAssets.filter(elem =>
+                !(elem.id === asset.id && elem.url === asset.url && elem.image === asset.image))
+            if (this.sendingAssets.length < 1) {
+                this.sendingAssets = [
+                    { id: 0, url: '', image: null }
+                ]
+            }
+        },
+        removeReceivingAsset(asset) {
+            this.receivingAssets = this.receivingAssets.filter(elem =>
+                !(elem.id === asset.id && elem.url === asset.url && elem.image === asset.image))
+            if (this.receivingAssets.length < 1) {
+                this.receivingAssets = [
+                    { id: 0, url: '', image: null }
+                ]
+            }
+        },
         async copyToClipboard(text) {
             await navigator.clipboard.writeText(text)
             alert(this.$t('message.modal_completed_clipboard_copy_done'))
@@ -791,7 +841,7 @@ export default {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
                             await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId)
                         }
-                    } else if (asset.tokenStandard === 'ERC20') {                        
+                    } else if (asset.tokenStandard === 'ERC20') {
                         // 残高チェック
                         const amount = new BigNumber(ethers.utils.parseEther(asset.amount.toString()).toString())
                         const balance = await this.libZeroEx.balanceOf(asset.contractAddress, this.order.makerAddress)

@@ -1,33 +1,25 @@
 <template>
   <v-app>
-    <v-card
-      color="cyan lighten-1"
+    <v-app-bar
+      app
+      dense
       dark
+      color="cyan lighten-1"
+      class="elevation-2"
     >
-      <v-card-title
-        class="text-center
-        justify-center py-6"
+      <router-link
+          to="/"
+          class="routerLink white--text"
       >
-        <h2
-          class="font-weight-bold display-2"
-        >
-          <router-link
-            to="/"
-            class="routerLink white--text"
-          >
-            {{ $t("message.serviceName") }}
-          </router-link>
-        </h2>
-      </v-card-title>
-
-      <!-- <v-tabs
-        v-if="$router.currentRoute.path === '/' || $router.currentRoute.path === '/task'" -->
+        <v-toolbar-title><b>{{ $t("message.serviceName") }}</b></v-toolbar-title>
+      </router-link>
+    </v-app-bar>
+    <!--
       <v-tabs
         v-if="false"
         background-color="transparent"
         dark
         grow
-        icons-and-text
       >
         <v-tab
           to="/"
@@ -41,8 +33,7 @@
         >
           {{ $t("message.tab_task") }}
         </v-tab>
-      </v-tabs>
-    </v-card>
+      </v-tabs> -->
 
     <router-view />
 
