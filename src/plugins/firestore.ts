@@ -18,14 +18,14 @@ class Firestore {
     async getOrderByMakerAddress(makerAddress: string, perPage: number, docSnapshot: any | undefined): Promise<any> {
         var query = this.db
             .collection("orders")
-            .where("sellerAddress", '==', makerAddress)
+            .where("makerAddress", '==', makerAddress)
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
     async getOrderByTakerAddress(takerAddress: string, perPage: number, docSnapshot: any | undefined): Promise<any> {
         var query = this.db
             .collection("orders")
-            .where("buyerAddress", '==', takerAddress)
+            .where("takerAddress", '==', takerAddress)
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
