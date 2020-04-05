@@ -16,7 +16,11 @@
         >
           {{ $t('message.tab_task') }}
         </v-toolbar-title>
-
+        <OrderCard
+          v-for="order of orders"
+          :key="order.id"
+          :order="order"
+        />
         <v-card
           v-for="order of orders"
           :key="order.id"
@@ -40,8 +44,12 @@
 import firestore from '../plugins/firestore'
 import moment from 'moment'
 import Web3 from 'web3'
+import OrderCard from '../components/OrderCard'
 export default {
     name: 'Task',
+    components:{
+        OrderCard,
+    },
     data: () => ({
         errorMessages: '',
         myAddress: null,
