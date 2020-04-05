@@ -75,7 +75,7 @@ export default {
         this.myAddress = this.myAddress.toLowerCase()
         console.log('myAddress', this.myAddress)
 
-        this.orders = await firestore.getOrderByTakerAddress(this.myAddress, 50, undefined)
+        this.orders = await firestore.getOrderByMakerAddress(this.myAddress, 50, undefined)
         this.orders = this.orders.dataArray
         console.log(this.orders)
     },
