@@ -354,7 +354,10 @@
 
           <v-card-text>{{ waitingApprovalMessage }}</v-card-text>
 
-          <v-card-text align="center" justify="center">
+          <v-card-text
+            align="center"
+            justify="center"
+          >
             <v-progress-circular
               indeterminate
               size="16"
@@ -376,7 +379,10 @@
 
           <v-card-text>{{ waitingSigningMessage }}</v-card-text>
 
-          <v-card-text align="center" justify="center">
+          <v-card-text
+            align="center"
+            justify="center"
+          >
             <v-progress-circular
               indeterminate
               size="16"
@@ -564,7 +570,6 @@
               </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ orderForDisplay.takerFee ? orderForDisplay.takerFee.toString() : '' }}</li>
             </ul>
           </v-card-text>
-
           <v-card-actions>
             <v-spacer />
             <v-btn
@@ -610,7 +615,7 @@ import { ethers } from 'ethers'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
 import { MetamaskSubprovider, BigNumber } from '0x.js'
-
+import Web3 from 'web3'
 export default {
     name: 'New',
     data: () => ({
@@ -636,9 +641,9 @@ export default {
         waitingSigningMessage: null,
         waitingApprovalMessage: null,
         completedMessage: null,
-        baseUrl: ''
+        baseUrl: '',
+        myAddress:''
     }),
-    props:['state'],
     created: async function() {
         this.baseUrl = window.location.protocol + '//' + window.location.host
 
@@ -654,6 +659,17 @@ export default {
         if (locale) {
             moment.locale(locale)
         }
+        let provider
+        if (window.ethereum) {
+            await window.ethereum.enable()
+            provider = window.ethereum
+        } else if (window.web3) {
+            provider = window.web3.currentProvider
+        }
+        const web3 = new Web3(provider)
+        this.myAddress = (await web3.eth.getAccounts())[0] || ''
+        this.myAddress = this.myAddress.toLowerCase()
+        console.log(this.myAddress)
     },
     methods: {
         removeSendingAsset(asset) {
@@ -694,7 +710,7 @@ export default {
                 asset.loading = 'cyan lighten-2'
                 opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
                     console.log('assetInfo', assetInfo)
-                    if(side==="maker" && assetInfo.owner.address!==this.state.myAddress){
+                    if(side==="maker" && assetInfo.owner.address!==this.myAddress){
                         this.dialog = true
                         this.errorMessage = this.$t('message.error_not_my_token')
                         asset.url = ''

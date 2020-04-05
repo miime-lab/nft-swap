@@ -54,7 +54,7 @@
 
     <div class="mb-6" />
 
-    <router-view :state="state" />
+    <router-view />
 
     <v-spacer />
 
@@ -118,23 +118,8 @@ import Vue from 'vue'
 import Web3 from 'web3'
 export default Vue.extend({
     name: 'App',
-    data: () => ({
-        state:{
-            myAddress:  ""
-        },
-        provider: {}
-    }),
     created:async function (){
-        let provider
-        if (window.ethereum) {
-            await window.ethereum.enable()
-            provider = window.ethereum
-        } else if (window.web3) {
-            provider = window.web3.currentProvider
-        }
-        const web3 = new Web3(provider)
-        this.myAddress = (await web3.eth.getAccounts())[0] || ''
-        this.myAddress = this.myAddress.toLowerCase()
+
     }
 })
 </script>
