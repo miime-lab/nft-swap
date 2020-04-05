@@ -1,11 +1,6 @@
 <template>
-  <v-container
-    class="fill-height"
-  >
-    <v-row
-      align="start"
-      justify="center"
-    >
+  <v-container class="mt-7">
+    <v-row>
       <v-col
         cols="12"
         sm="8"
@@ -16,6 +11,7 @@
             v-for="order of orders"
             :key="order.id"
             class="elevation-20 ma-2 pa-1"
+            @click="$router.push(`/order/${order.id}`)"
           >
             <v-img
               v-if="!!order.makerAssetImage"
@@ -34,7 +30,7 @@
             </v-card-subtitle>
 
             <v-card-text>
-              {{ order.updatedAt }}
+              {{ order.id }}
             </v-card-text>
           </v-card>
         </v-item-group>

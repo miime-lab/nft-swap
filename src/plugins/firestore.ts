@@ -19,7 +19,6 @@ class Firestore {
         var query = this.db
             .collection("orders")
             .where("sellerAddress", '==', makerAddress)
-            .orderBy("updatedAt")
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
@@ -42,8 +41,9 @@ class Firestore {
                 .then((snapshot: any) => {
                     output.docSnapshot = snapshot
                     snapshot.forEach((doc: any) => {
-                        console.log(doc)
-                        output.dataArray.push(doc.data())
+                        let dic = doc.data()
+                        dic.id = doc.id
+                        output.dataArray.push(dic)
                     });
                 })
         } else {
