@@ -51,9 +51,18 @@
             </v-card-title>
 
             <v-card-text>{{ waitingApprovalMessage }}</v-card-text>
+
+            <v-card-text align="center" justify="center">
+              <v-progress-circular
+                indeterminate
+                size="16"
+                width="2"
+                color="cyan lighten-2"
+              />
+            </v-card-text>
           </v-card>
 
-          <!-- Tx 送信待ち モーダル -->
+          <!-- Tx 完了待ち モーダル -->
           <v-card
             v-else-if="waitingSendMessage"
           >
@@ -65,10 +74,14 @@
 
             <v-card-text>{{ waitingSendMessage }}</v-card-text>
 
-            <v-progress-circular
-              indeterminate
-              color="cyan lighten-2"
-            />
+            <v-card-text align="center" justify="center">
+              <v-progress-circular
+                indeterminate
+                size="16"
+                width="2"
+                color="cyan lighten-2"
+              />
+            </v-card-text>
           </v-card>
 
           <!-- 完了 モーダル -->
