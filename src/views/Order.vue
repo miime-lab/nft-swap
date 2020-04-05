@@ -331,6 +331,7 @@ export default {
         this.libZeroEx = new LibZeroEx(new MetamaskSubprovider(this.provider))
 
         await this.checkAndUpdateOrderStatus()
+        console.log(1234, await this.libZeroEx.ownerOf('0xc03844f07f86ad1d90a1c4a2a8204dcf00f3a991',BigNumber(10231690)))
     },
     methods: {
         async copyUrl() {
@@ -421,10 +422,14 @@ export default {
                 console.log('fillOrder')
                 this.errorMessage = null
                 this.dialog = true
-
                 const contractAddressCache = {}
                 for (const asset of this.orderForDisplay.takerAssets) {
                     if (asset.tokenStandard === 'ERC721') {
+                        const currentOwner = await this.libZeroEx.ownerOf(asset.contractAddress, BigNumber(asset.tokenId))
+                        if (asset.ownerAddress!==currentOwner){
+                            this.errorMessage = this.$t('message.modal_error_owner_changed')
+                            return
+                        }
                         const isApproved = await this.libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
                         if (!isApproved) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
