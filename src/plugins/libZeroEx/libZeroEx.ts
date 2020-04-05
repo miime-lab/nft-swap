@@ -177,19 +177,21 @@ export default class libZeroEx {
     public async setApprovalForAll(
         contractAddress: string,
         makerAddress: string,
-        tokenId?: string
+        tokenId?: string,
+        gasPrice?: string
     ): Promise<void> {
+        const opts = gasPrice ? { from: makerAddress, gasPrice } : { from: makerAddress }
         const erc721Token = new ERC721TokenContract(
             contractAddress,
             this.providerEngine
         );
         try {
-            const makerERC721ApprovalTxHash = await erc721Token
+            await erc721Token
                 .setApprovalForAll(
                     this.contractWrappers.contractAddresses.erc721Proxy,
                     true
                 )
-                .awaitTransactionSuccessAsync({ from: makerAddress })
+                .awaitTransactionSuccessAsync(opts)
         } catch (e) {
             // CryptoKitties などの場合
             await erc721Token
@@ -197,7 +199,7 @@ export default class libZeroEx {
                     this.contractWrappers.contractAddresses.erc721Proxy,
                     new BigNumber(tokenId || 0)
                 )
-                .awaitTransactionSuccessAsync({ from: makerAddress });
+                .awaitTransactionSuccessAsync(opts);
         }
     }
     public async isApprovedForAll(
@@ -239,8 +241,10 @@ export default class libZeroEx {
     // ERC20 Token
     public async approve(
         contractAddress: string,
-        makerAddress: string
+        makerAddress: string,
+        gasPrice?: string
     ): Promise<void> {
+        const opts = gasPrice ? { from: makerAddress, gasPrice } : { from: makerAddress }
         const erc20Token = new ERC20TokenContract(
             contractAddress,
             this.providerEngine
@@ -250,7 +254,7 @@ export default class libZeroEx {
                 this.contractWrappers.contractAddresses.erc20Proxy,
                 MAX_ALLOWANCE
             )
-            .awaitTransactionSuccessAsync({ from: makerAddress });
+            .awaitTransactionSuccessAsync(opts);
     }
     public async allowance(
         contractAddress: string,
@@ -282,14 +286,27 @@ export default class libZeroEx {
     public async fillOrder(
         signedOrder: SignedOrder,
         taker: string,
-        takerAssetAmount: BigNumber
+        takerAssetAmount: BigNumber,
+        gasPrice?: string
     ): Promise<string> {
+        const gas = (await this.contractWrappers.exchange
+            .fillOrder(signedOrder, takerAssetAmount, signedOrder.signature)
+            .estimateGasAsync({
+                from: taker,
+                gasPrice: gasPrice || TX_DEFAULTS.gasPrice,
+                value: this.calculateProtocolFee([signedOrder], Number(gasPrice || TX_DEFAULTS.gasPrice))
+            })) * 1.5;
+        const opts = {
+            gas,
+            gasPrice: gasPrice || TX_DEFAULTS.gasPrice
+        }
+        console.log('gasPrice', gasPrice)
         const txHash = await this.contractWrappers.exchange
             .fillOrder(signedOrder, takerAssetAmount, signedOrder.signature)
             .sendTransactionAsync({
                 from: taker,
-                ...TX_DEFAULTS,
-                value: this.calculateProtocolFee([signedOrder])
+                ...opts,
+                value: this.calculateProtocolFee([signedOrder], Number(gasPrice || TX_DEFAULTS.gasPrice))
             });
         return txHash;
     }

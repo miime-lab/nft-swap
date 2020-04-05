@@ -353,6 +353,15 @@
           </v-card-title>
 
           <v-card-text>{{ waitingApprovalMessage }}</v-card-text>
+
+          <v-card-text align="center" justify="center">
+            <v-progress-circular
+              indeterminate
+              size="16"
+              width="2"
+              color="cyan lighten-2"
+            />
+          </v-card-text>
         </v-card>
 
         <!-- 署名待ち モーダル -->
@@ -366,6 +375,15 @@
           </v-card-title>
 
           <v-card-text>{{ waitingSigningMessage }}</v-card-text>
+
+          <v-card-text align="center" justify="center">
+            <v-progress-circular
+              indeterminate
+              size="16"
+              width="2"
+              color="cyan lighten-2"
+            />
+          </v-card-text>
         </v-card>
 
         <!-- 完了 モーダル -->
@@ -774,7 +792,7 @@ export default {
 
             orderForDisplay.makerAssets = this.getAssetsForDisplay(order.makerAssetData)
             orderForDisplay.takerAssets = this.getAssetsForDisplay(order.takerAssetData)
-
+            console.log(123, orderForDisplay.takerAssets)
             return orderForDisplay
         },
         makeOneSideInfo(assetTokens, currencyToken) {

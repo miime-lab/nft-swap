@@ -51,9 +51,18 @@
             </v-card-title>
 
             <v-card-text>{{ waitingApprovalMessage }}</v-card-text>
+
+            <v-card-text align="center" justify="center">
+              <v-progress-circular
+                indeterminate
+                size="16"
+                width="2"
+                color="cyan lighten-2"
+              />
+            </v-card-text>
           </v-card>
 
-          <!-- Tx 送信待ち モーダル -->
+          <!-- Tx 完了待ち モーダル -->
           <v-card
             v-else-if="waitingSendMessage"
           >
@@ -64,6 +73,15 @@
             </v-card-title>
 
             <v-card-text>{{ waitingSendMessage }}</v-card-text>
+
+            <v-card-text align="center" justify="center">
+              <v-progress-circular
+                indeterminate
+                size="16"
+                width="2"
+                color="cyan lighten-2"
+              />
+            </v-card-text>
           </v-card>
 
           <!-- 完了 モーダル -->
@@ -238,6 +256,7 @@
                       v-else
                     >
                       {{ asset.amount }} {{ asset.symbol }}
+                      <span class="blue--text">({{ $t('message.headline_balance') }}: {{ roundEth(wethBalance) }} WETH, {{ roundEth(ethBalance) }} ETH)</span>
                     </span>
                   </li>
                 </ul>
@@ -275,8 +294,12 @@ import { MetamaskSubprovider, BigNumber } from '0x.js'
 export default {
     name: 'Order',
     data: () => ({
-        libZeroEx: null,
         errorMessage: '',
+        libZeroEx: null,
+        myAddress: null,
+        ethBalance: null,
+        wethBalance: null,
+        gasPrice: null,
         orderId: '',
         order: {},
         orderForDisplay: {},
@@ -330,12 +353,31 @@ export default {
 
         this.libZeroEx = new LibZeroEx(new MetamaskSubprovider(this.provider))
 
+        this.gasPrice = await web3.eth.getGasPrice()
+        console.log('gasPrice', this.gasPrice)
+        this.ethBalance = ethers.utils.formatEther((await web3.eth.getBalance(this.myAddress)).toString())
+        console.log('ethBalance', this.ethBalance)
+        this.wethBalance = await this.getWethBalance(this.myAddress)
+        console.log('wethBalance', this.wethBalance)
+
         await this.checkAndUpdateOrderStatus()
     },
     methods: {
         async copyUrl() {
             await navigator.clipboard.writeText(location.href)
             alert(this.$t('message.order_page.url_copy_done'))
+        },
+        roundEth(ethValue) {
+          const [ integerPart, decimalPart ] = ethValue.split('.')
+          if (!decimalPart) {
+            return ethValue
+          }
+          return integerPart + '.' + decimalPart.substr(0, 4)
+        },
+        async getWethBalance(address) {
+            const wethContractAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+            const balance = await this.libZeroEx.balanceOf(wethContractAddress, address)
+            return ethers.utils.formatEther(balance.toString())
         },
         async checkAndUpdateOrderStatus() {
             const orderInfo = await this.libZeroEx.getOrderInfo(this.order)
@@ -387,7 +429,9 @@ export default {
                         }
                         assetsForDisplay.push({
                             symbol: 'WETH',
-                            amount: ethers.utils.formatEther(multiAssetData.amounts[i].toString())
+                            amount: ethers.utils.formatEther(multiAssetData.amounts[i].toString()),
+                            tokenStandard: "ERC20",
+                            contractAddress: assetData.tokenAddress
                         })
                     } else {
                         throw new Error('Not supported asset:', assetData)
@@ -432,31 +476,30 @@ export default {
                         const isApproved = await this.libZeroEx.isApprovedForAll(asset.contractAddress, asset.ownerAddress)
                         if (!isApproved) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
-                            await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId)
+                            await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId, this.gasPrice)
                         }
                     } else if (asset.tokenStandard === 'ERC20') {
                         // 残高チェック
                         const amount = new BigNumber(ethers.utils.parseEther(asset.amount.toString()).toString())
-                        const balance = await this.libZeroEx.balanceOf(asset.contractAddress, this.order.makerAddress)
+                        const balance = await this.libZeroEx.balanceOf(asset.contractAddress, this.order.takerAddress)
                         console.log('balance', balance.toString())
                         if (balance.lt(amount)) {
                             this.errorMessage = this.$t('message.modal_error_weth_insufficient_balance')
                             return
                         }
 
-                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, this.order.makerAddress)
+                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, this.order.takerAddress)
                         if (allowance.lt(amount)) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
-                            await this.libZeroEx.approve(asset.contractAddress, this.order.makerAddress)
+                            await this.libZeroEx.approve(asset.contractAddress, this.order.takerAddress, this.gasPrice)
                         }
                     }
                 }
                 this.waitingSendMessage = this.$t('message.order_page.modal_waiting_send_tx')
                 this.waitingApprovalMessage = null
 
-
                 const orderForFill = this.convertOrder(this.order)
-                const txHash = await this.libZeroEx.fillOrder(orderForFill, orderForFill.takerAddress, orderForFill.takerAssetAmount)
+                const txHash = await this.libZeroEx.fillOrder(orderForFill, orderForFill.takerAddress, orderForFill.takerAssetAmount, this.gasPrice)
                 this.waitingApprovalMessage = null
 
                 this.completedMessage = this.$t('message.order_page.modal_completed_message')
