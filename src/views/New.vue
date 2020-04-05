@@ -616,7 +616,6 @@ import { ethers } from 'ethers'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
 import { MetamaskSubprovider, BigNumber } from '0x.js'
-import Web3 from 'web3'
 export default {
     name: 'New',
     data: () => ({
