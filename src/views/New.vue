@@ -35,7 +35,11 @@
               justify="center"
               class="ml-1"
             >
-              <v-col cols="6" sm="7" md="7">
+              <v-col
+                cols="6"
+                sm="7"
+                md="7"
+              >
                 <v-card-title
                   v-if="!!asset.name"
                   class="subtitle-1 ma-0 pa-0"
@@ -49,7 +53,12 @@
                   {{ asset.contractName }} #{{ asset.tokenId }}
                 </v-card-subtitle>
               </v-col>
-              <v-col cols="4" sm="3" md="3" align="center">
+              <v-col
+                cols="4"
+                sm="3"
+                md="3"
+                align="center"
+              >
                 <v-img
                   v-if="!!asset.image"
                   class="align-center justify-center pa-0 ma-0"
@@ -59,7 +68,9 @@
                 />
               </v-col>
               <v-col
-                cols="2" sm="2" md="2"
+                cols="2"
+                sm="2"
+                md="2"
                 class="d-flex justify-center align-center pr-5"
               >
                 <v-icon @click="removeSendingAsset(asset)">
@@ -171,7 +182,11 @@
               justify="center"
               class="ml-1"
             >
-              <v-col cols="6" sm="7" md="7">
+              <v-col
+                cols="6"
+                sm="7"
+                md="7"
+              >
                 <v-card-title
                   v-if="!!asset.name"
                   class="subtitle-1 ma-0 pa-0"
@@ -185,7 +200,12 @@
                   {{ asset.contractName }} #{{ asset.tokenId }}
                 </v-card-subtitle>
               </v-col>
-              <v-col cols="4" sm="3" md="3" align="center">
+              <v-col
+                cols="4"
+                sm="3"
+                md="3"
+                align="center"
+              >
                 <v-img
                   v-if="!!asset.image"
                   class="align-center justify-center pa-0 ma-0"
@@ -195,7 +215,9 @@
                 />
               </v-col>
               <v-col
-                cols="2" sm="2" md="2"
+                cols="2"
+                sm="2"
+                md="2"
                 class="d-flex justify-center align-center pr-5"
               >
                 <v-icon @click="removeReceivingAsset(asset)">
@@ -598,6 +620,7 @@ export default {
         completedMessage: null,
         baseUrl: ''
     }),
+    props:['state'],
     created: async function() {
         this.baseUrl = window.location.protocol + '//' + window.location.host
 
@@ -613,6 +636,7 @@ export default {
         if (locale) {
             moment.locale(locale)
         }
+        console.log(this.state.myAddress)
     },
     methods: {
         removeSendingAsset(asset) {
