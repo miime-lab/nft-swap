@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-7">
+  <v-container class="mt-7 pl-0 ma-0">
     <v-row
       justify="center"
       class="ml-0"
@@ -15,7 +15,7 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-4 mt-2 mb-0 pa-0 justify-center"
+            class="elevation-4 mt-6 mb-0 pa-0 justify-center"
           >
             <v-toolbar
               v-if="asset.id === 0"

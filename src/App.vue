@@ -5,8 +5,14 @@
       dense
       dark
       color="cyan lighten-1"
+      class="elevation-2"
     >
-      <v-toolbar-title><b>{{ $t("message.serviceName") }}</b></v-toolbar-title>
+      <router-link
+          to="/"
+          class="routerLink white--text"
+      >
+        <v-toolbar-title><b>{{ $t("message.serviceName") }}</b></v-toolbar-title>
+      </router-link>
     </v-app-bar>
     <!--
       <v-tabs
