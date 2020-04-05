@@ -15,7 +15,7 @@
           <v-card
             v-for="order of orders"
             :key="order.id"
-            class="elevation-20 mb-0"
+            class="elevation-20 ma-2 pa-1"
           >
             <v-img
               v-if="!!order.makerAssetImage"
@@ -34,20 +34,8 @@
             </v-card-subtitle>
 
             <v-card-text>
-              Dummy
+              {{ order.updatedAt }}
             </v-card-text>
-
-            <v-divider />
-
-            <v-card-actions>
-              <v-btn
-                color="cyan lighten-2"
-                text
-                @click="fillOrder"
-              >
-                {{ $t("message.button_fillOrder") }}
-              </v-btn>
-            </v-card-actions>
           </v-card>
         </v-item-group>
       </v-col>
