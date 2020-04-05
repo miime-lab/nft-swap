@@ -18,7 +18,10 @@
         <v-icon>mdi-check</v-icon>
       </v-btn>
 
-      <v-menu bottom left>
+      <v-menu
+        bottom
+        left
+      >
         <template v-slot:activator="{ on }">
           <v-btn
             dark
@@ -47,7 +50,6 @@
           </v-list-item>
         </v-list>
       </v-menu>
-
     </v-app-bar>
 
     <div class="mb-6" />
@@ -113,13 +115,17 @@
 
 <script lang="js">
 import Vue from 'vue'
-
+import Web3 from 'web3'
 export default Vue.extend({
-    name: 'App'
+    name: 'App',
+    created:async function (){
+
+    }
 })
 </script>
 
 <style>
+
 .routerLink{
     text-decoration: none;
 }

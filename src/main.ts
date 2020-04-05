@@ -34,6 +34,7 @@ const messages = {
             modal_error_no_asset: "Please input at least one asset for both",
             modal_error_wrong_owner: "Items with different owners are mixed",
             modal_error_wrong_signer: "Item owner and current signing address are different",
+            modal_error_owner_changed: "wrong owner of asset",
             modal_error_weth_insufficient_balance: "Insufficient WETH balance",
             modal_makeOrder_title: "Create Order",
             modal_completed_message: "Order creation is complete. Please share the following URL to your trading partner.",
@@ -56,6 +57,7 @@ const messages = {
             modal_makeOrder_cancel: "Cancel",
             error_invalid_asset_url: "Please input OpenSea or miime URL",
             error_unsupported_token_standard: "Sorry, this token standard is not supported",
+            error_not_my_token: "You don't own this token.",
             error_already_input_asset: "The asset is already input.",
             order_page: {
                 order_status: {
@@ -113,6 +115,7 @@ const messages = {
             modal_error_no_asset: "あなた/相手のアイテムをそれぞれ1つ以上入力してください",
             modal_error_wrong_owner: "所有者が異なるアイテムが混在しています",
             modal_error_wrong_signer: "アイテムの所有者と、現在の署名アドレスが違います",
+            modal_error_owner_changed: "アイテムの所有者が異なります",
             modal_error_weth_insufficient_balance: "WETHの残高が不足しています",
             modal_makeOrder_title: "オーダーの作成",
             modal_makeOrder_title_approve: "取引許可",
@@ -128,6 +131,7 @@ const messages = {
             modal_makeOrder_create: "作成",
             modal_makeOrder_cancel: "キャンセル",
             error_invalid_asset_url: "アイテム詳細ページの URL を入力してください",
+            error_not_my_token: "あなたはこのトークンの所有者ではありません。",
             error_unsupported_token_standard: "申し訳ありませんがこのトークン規格には対応していません",
             error_already_input_asset: "このアイテムはすでに入力済みです",
             order_page: {

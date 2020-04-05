@@ -35,7 +35,11 @@
               justify="center"
               class="ml-1"
             >
-              <v-col cols="6" sm="7" md="7">
+              <v-col
+                cols="6"
+                sm="7"
+                md="7"
+              >
                 <v-card-title
                   v-if="!!asset.name"
                   class="subtitle-1 ma-0 pa-0"
@@ -49,7 +53,12 @@
                   {{ asset.contractName }} #{{ asset.tokenId }}
                 </v-card-subtitle>
               </v-col>
-              <v-col cols="4" sm="3" md="3" align="center">
+              <v-col
+                cols="4"
+                sm="3"
+                md="3"
+                align="center"
+              >
                 <v-img
                   v-if="!!asset.image"
                   class="align-center justify-center pa-0 ma-0"
@@ -59,7 +68,9 @@
                 />
               </v-col>
               <v-col
-                cols="2" sm="2" md="2"
+                cols="2"
+                sm="2"
+                md="2"
                 class="d-flex justify-center align-center pr-5"
               >
                 <v-icon @click="removeSendingAsset(asset)">
@@ -76,7 +87,7 @@
                   ref="asset.url"
                   v-model="asset.url"
                   :label="$t('message.card_input_label_url')"
-                  :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id)]"
+                  :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id,'maker')]"
                   :error-messages="asset.errorMessages"
                   name="url"
                   type="text"
@@ -171,7 +182,11 @@
               justify="center"
               class="ml-1"
             >
-              <v-col cols="6" sm="7" md="7">
+              <v-col
+                cols="6"
+                sm="7"
+                md="7"
+              >
                 <v-card-title
                   v-if="!!asset.name"
                   class="subtitle-1 ma-0 pa-0"
@@ -185,7 +200,12 @@
                   {{ asset.contractName }} #{{ asset.tokenId }}
                 </v-card-subtitle>
               </v-col>
-              <v-col cols="4" sm="3" md="3" align="center">
+              <v-col
+                cols="4"
+                sm="3"
+                md="3"
+                align="center"
+              >
                 <v-img
                   v-if="!!asset.image"
                   class="align-center justify-center pa-0 ma-0"
@@ -195,7 +215,9 @@
                 />
               </v-col>
               <v-col
-                cols="2" sm="2" md="2"
+                cols="2"
+                sm="2"
+                md="2"
                 class="d-flex justify-center align-center pr-5"
               >
                 <v-icon @click="removeReceivingAsset(asset)">
@@ -212,7 +234,7 @@
                   ref="asset.url"
                   v-model="asset.url"
                   :label="$t('message.card_input_label_url')"
-                  :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id)]"
+                  :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id,'taker')]"
                   :error-messages="asset.errorMessages"
                   name="url"
                   type="text"
@@ -332,7 +354,10 @@
 
           <v-card-text>{{ waitingApprovalMessage }}</v-card-text>
 
-          <v-card-text align="center" justify="center">
+          <v-card-text
+            align="center"
+            justify="center"
+          >
             <v-progress-circular
               indeterminate
               size="16"
@@ -354,7 +379,10 @@
 
           <v-card-text>{{ waitingSigningMessage }}</v-card-text>
 
-          <v-card-text align="center" justify="center">
+          <v-card-text
+            align="center"
+            justify="center"
+          >
             <v-progress-circular
               indeterminate
               size="16"
@@ -542,7 +570,6 @@
               </li><li>{{ $t('message.modal_makeOrder_headline_fee') }}: {{ orderForDisplay.takerFee ? orderForDisplay.takerFee.toString() : '' }}</li>
             </ul>
           </v-card-text>
-
           <v-card-actions>
             <v-spacer />
             <v-btn
@@ -588,7 +615,7 @@ import { ethers } from 'ethers'
 import LibZeroEx from '../plugins/libZeroEx/libZeroEx'
 import { assetDataUtils } from '0x.js' // TODO: 最終的には libZeroEx に移す
 import { MetamaskSubprovider, BigNumber } from '0x.js'
-
+import Web3 from 'web3'
 export default {
     name: 'New',
     data: () => ({
@@ -614,7 +641,8 @@ export default {
         waitingSigningMessage: null,
         waitingApprovalMessage: null,
         completedMessage: null,
-        baseUrl: ''
+        baseUrl: '',
+        myAddress:''
     }),
     created: async function() {
         this.baseUrl = window.location.protocol + '//' + window.location.host
@@ -631,6 +659,17 @@ export default {
         if (locale) {
             moment.locale(locale)
         }
+        let provider
+        if (window.ethereum) {
+            await window.ethereum.enable()
+            provider = window.ethereum
+        } else if (window.web3) {
+            provider = window.web3.currentProvider
+        }
+        const web3 = new Web3(provider)
+        this.myAddress = (await web3.eth.getAccounts())[0] || ''
+        this.myAddress = this.myAddress.toLowerCase()
+        console.log(this.myAddress)
     },
     methods: {
         removeSendingAsset(asset) {
@@ -655,7 +694,7 @@ export default {
             await navigator.clipboard.writeText(text)
             alert(this.$t('message.modal_completed_clipboard_copy_done'))
         },
-        loadAssetInfoFromUrl(dataName, id) {
+        loadAssetInfoFromUrl(dataName, id, side) {
             const asset = this[dataName][id]
             if (!asset.url) {
                 return true
@@ -671,7 +710,11 @@ export default {
                 asset.loading = 'cyan lighten-2'
                 opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
                     console.log('assetInfo', assetInfo)
-                    if (assetInfo.asset_contract.schema_name !== 'ERC721') {
+                    if(side==="maker" && assetInfo.owner.address!==this.myAddress){
+                        this.dialog = true
+                        this.errorMessage = this.$t('message.error_not_my_token')
+                        asset.url = ''
+                    }else if (assetInfo.asset_contract.schema_name !== 'ERC721') {
                         this.dialog = true
                         this.errorMessage = this.$t('message.error_unsupported_token_standard')
                         asset.url = ''
