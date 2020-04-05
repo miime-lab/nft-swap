@@ -765,7 +765,6 @@ export default {
 
             orderForDisplay.makerAssets = this.getAssetsForDisplay(order.makerAssetData)
             orderForDisplay.takerAssets = this.getAssetsForDisplay(order.takerAssetData)
-            console.log(123, orderForDisplay.takerAssets)
             return orderForDisplay
         },
         makeOneSideInfo(assetTokens, currencyToken) {
