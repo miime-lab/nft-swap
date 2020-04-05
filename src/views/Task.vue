@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import firestore from "../plugins/firestore"
 export default {
     name: 'Task',
     data: () => ({
@@ -64,6 +65,10 @@ export default {
             {}
         ]
     }),
+    created: async function(){
+        this.orders = await firestore.getOrderByTakerAddress("0x6b3c92aadb19750f3dfaad31974d8b3c7e7a171e", 50, undefined)
+        this.orders = this.orders.dataArray
+    },
     methods: {
         fillOrder () {
         }
