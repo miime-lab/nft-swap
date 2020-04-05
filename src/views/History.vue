@@ -14,7 +14,7 @@
           justify="center"
           class="title mb-2 grey--text"
         >
-          {{ $t('message.tab_task') }}
+          {{ $t('message.tab_history') }}
         </v-toolbar-title>
 
         <v-card
@@ -27,8 +27,8 @@
             {{ $t('message.headline_order_id') + ': ' + order.id }}
           </v-card-title>
           <v-card-text>
-            更新日: {{ getDateStr(order.updatedAt) }}<br>
-            ステータス: {{ order.status ? $t(`message.order_page.order_status.${order.status}`) : '-' }}
+            {{ $t('message.headline_updated_at') + ': ' + getDateStr(order.updatedAt) }}<br>
+            {{ $t('message.headline_status') + ': ' + (order.status ? $t(`message.order_page.order_status.${order.status}`) : '-') }}<br>
           </v-card-text>
         </v-card>
       </v-col>
@@ -41,7 +41,7 @@ import firestore from '../plugins/firestore'
 import moment from 'moment'
 import Web3 from 'web3'
 export default {
-    name: 'Task',
+    name: 'History',
     data: () => ({
         errorMessages: '',
         myAddress: null,

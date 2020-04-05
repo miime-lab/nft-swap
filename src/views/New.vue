@@ -1,8 +1,8 @@
 <template>
-  <v-container class="mt-7 pl-0 ma-0">
+  <v-container class="mt-7">
     <v-row
       justify="center"
-      class="ml-0"
+      class="ml-2 mr-2"
     >
       <v-col
         cols="12"
@@ -15,7 +15,8 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-4 mt-6 mb-0 pa-0 justify-center"
+            outlined
+            class="elevation-4 mb-0 pa-0 justify-center"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -223,7 +224,7 @@
               v-if="!!asset.image && asset.id === receivingAssets.length - 1"
             >
               <v-btn
-                color="cyan lighten-2"
+                color="orange lighten-2"
                 dark
                 small
                 absolute
@@ -868,8 +869,8 @@ export default {
                 const nowDate = new Date().getTime()
                 const docId = await firestore.addOrder({
                   order: normalizedOrder,
-                  sellerAddress: this.order.makerAddress,
-                  buyerAddress: this.order.takerAddress,
+                  makerAddress: this.order.makerAddress,
+                  takerAddress: this.order.takerAddress,
                   makerAssets: this.orderForDisplay.makerAssets,
                   takerAssets: this.orderForDisplay.takerAssets,
                   createdAt: nowDate,

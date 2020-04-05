@@ -19,15 +19,13 @@ class Firestore {
         var query = this.db
             .collection("orders")
             .where("makerAddress", '==', makerAddress)
-            .orderBy("updatedAt")
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
-    async getOrderByTakerAddress(makerAddress: string, perPage: number, docSnapshot: any | undefined): Promise<any> {
+    async getOrderByTakerAddress(takerAddress: string, perPage: number, docSnapshot: any | undefined): Promise<any> {
         var query = this.db
             .collection("orders")
-            .where("takerAddress", '==', makerAddress)
-            .orderBy("updatedAt")
+            .where("takerAddress", '==', takerAddress)
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
@@ -43,7 +41,9 @@ class Firestore {
                 .then((snapshot: any) => {
                     output.docSnapshot = snapshot
                     snapshot.forEach((doc: any) => {
-                        output.dataArray.push(doc.data())
+                        let dic = doc.data()
+                        dic.id = doc.id
+                        output.dataArray.push(dic)
                     });
                 })
         } else {

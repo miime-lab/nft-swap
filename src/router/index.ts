@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import New from '@/views/New.vue'
 import Task from '@/views/Task.vue'
+import History from '@/views/History.vue'
 import Order from '@/views/Order.vue'
 
 Vue.use(VueRouter)
@@ -16,6 +17,11 @@ const routes = [
         path: '/task',
         name: 'Task',
         component: Task
+    },
+    {
+        path: '/history',
+        name: 'History',
+        component: History
     },
     {
         path: '/order/:id',
