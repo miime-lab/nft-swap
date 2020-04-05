@@ -670,7 +670,10 @@ export default {
         const web3 = new Web3(provider)
         this.myAddress = (await web3.eth.getAccounts())[0] || ''
         this.myAddress = this.myAddress.toLowerCase()
+        this.gasPrice = await web3.eth.getGasPrice()
         console.log(this.myAddress)
+
+        this.libZeroEx = new LibZeroEx(new MetamaskSubprovider(provider))
     },
     methods: {
         removeSendingAsset(asset) {
@@ -859,18 +862,6 @@ export default {
         async createOrder() {
             try {
                 this.errorMessage = null
-
-                if (!this.libZeroEx) {
-                    if (window.ethereum) {
-                        await window.ethereum.enable()
-                        this.provider = window.ethereum
-                    } else if (window.web3) {
-                        this.provider = window.web3.currentProvider
-                    }
-                    const web3 = new Web3(this.provider)
-                    this.libZeroEx = new LibZeroEx(new MetamaskSubprovider(this.provider))
-                    this.gasPrice = await web3.eth.getGasPrice()
-                }
 
                 if (!this.existAssetInputs()) {
                     this.errorMessage = this.$t('message.modal_error_no_asset')
