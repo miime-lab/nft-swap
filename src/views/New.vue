@@ -79,22 +79,17 @@
               </v-col>
             </v-row>
 
-            <v-card-text
+            <v-text-field
               v-if="!asset.image"
-            >
-              <v-form>
-                <v-text-field
-                  ref="asset.url"
-                  v-model="asset.url"
-                  :label="$t('message.card_input_label_url')"
-                  :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id,'maker')]"
-                  :error-messages="asset.errorMessages"
-                  name="url"
-                  type="text"
-                  class="ma-0 pa-0"
-                />
-              </v-form>
-            </v-card-text>
+              ref="asset.url"
+              v-model="asset.url"
+              :label="$t('message.card_input_label_url')"
+              :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id,'maker')]"
+              :error-messages="asset.errorMessages"
+              name="url"
+              type="text"
+              class="mx-5"
+            />
 
             <v-fab-transition
               v-if="!!asset.image && asset.id === sendingAssets.length - 1"
@@ -128,33 +123,28 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-card-text>
-              <v-form>
-                <v-text-field
-                  ref="sendingCurrencies[0].amount"
-                  v-model="sendingCurrencies[0].amount"
-                  :rules="[isNumber]"
-                  suffix="WETH"
-                  :error-messages="sendingCurrencies[0].errorMessages"
-                  placeholder="0"
-                  name="amount"
-                  type="text"
-                  class="subtitle-1 ma-0 pa-0"
-                />
-              </v-form>
-            </v-card-text>
+            <v-text-field
+              ref="sendingCurrencies[0].amount"
+              v-model="sendingCurrencies[0].amount"
+              :rules="[isNumber]"
+              suffix="WETH"
+              :error-messages="sendingCurrencies[0].errorMessages"
+              placeholder="0"
+              name="amount"
+              type="text"
+              class="subtitle-1 mx-5"
+            />
           </v-card>
         </v-item-group>
 
         <div
           align="center"
           justify="center"
-          class="mt-6 mb-5"
+          class="mt-3 mb-3"
         >
-          <img
-            src="@/assets/swap-allow.png"
-            height="48px"
-          >
+          <v-icon size="50">
+            mdi-swap-vertical-bold
+          </v-icon>
         </div>
 
         <v-item-group>
@@ -226,21 +216,18 @@
               </v-col>
             </v-row>
 
-            <v-card-text
+
+            <v-text-field
               v-if="!asset.image"
-            >
-              <v-form>
-                <v-text-field
-                  ref="asset.url"
-                  v-model="asset.url"
-                  :label="$t('message.card_input_label_url')"
-                  :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id,'taker')]"
-                  :error-messages="asset.errorMessages"
-                  name="url"
-                  type="text"
-                />
-              </v-form>
-            </v-card-text>
+              ref="asset.url"
+              v-model="asset.url"
+              class="mx-5"
+              :label="$t('message.card_input_label_url')"
+              :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id,'taker')]"
+              :error-messages="asset.errorMessages"
+              name="url"
+              type="text"
+            />
 
             <v-fab-transition
               v-if="!!asset.image && asset.id === receivingAssets.length - 1"
@@ -274,21 +261,17 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-card-text>
-              <v-form>
-                <v-text-field
-                  ref="receivingCurrencies[0].amount"
-                  v-model="receivingCurrencies[0].amount"
-                  :rules="[isNumber]"
-                  suffix="WETH"
-                  :error-messages="receivingCurrencies[0].errorMessages"
-                  placeholder="0"
-                  name="amount"
-                  type="text"
-                  class="subtitle-1 ma-0"
-                />
-              </v-form>
-            </v-card-text>
+            <v-text-field
+              ref="receivingCurrencies[0].amount"
+              v-model="receivingCurrencies[0].amount"
+              :rules="[isNumber]"
+              suffix="WETH"
+              :error-messages="receivingCurrencies[0].errorMessages"
+              placeholder="0"
+              name="amount"
+              type="text"
+              class="subtitle-1 mx-5"
+            />
           </v-card>
         </v-item-group>
       </v-col>
