@@ -910,7 +910,8 @@ export default {
                   makerAssets: this.orderForDisplay.makerAssets,
                   takerAssets: this.orderForDisplay.takerAssets,
                   createdAt: nowDate,
-                  updatedAt: nowDate
+                  updatedAt: nowDate,
+                  status: 'FILLABLE'
                 })
                 console.log('docId', docId)
 

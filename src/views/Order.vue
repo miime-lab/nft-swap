@@ -416,7 +416,10 @@ export default {
             this.orderForDisplay.status = status
         },
         getStatusLabel(status) {
-          return this.$t(`message.order_page.order_status.${status}`) || '-'
+          if (!status) {
+            return '-'
+          }
+          return this.$t(`message.order_page.order_status.${status}`)
         },
         getAssetFromCache(contractAddress, tokenId) {
             return this.makerAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||
