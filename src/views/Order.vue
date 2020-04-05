@@ -412,11 +412,19 @@ export default {
                             await this.libZeroEx.setApprovalForAll(asset.contractAddress, asset.ownerAddress, asset.tokenId)
                         }
                     } else if (asset.tokenStandard === 'ERC20') {
-                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, asset.ownerAddress)
-                        const amount = new BigNumber(ethers.utils.formatEther(multiAssetData.amounts[i].toString()))
+                        // 残高チェック
+                        const amount = new BigNumber(ethers.utils.parseEther(asset.amount.toString()).toString())
+                        const balance = await this.libZeroEx.balanceOf(asset.contractAddress, this.order.makerAddress)
+                        console.log('balance', balance.toString())
+                        if (balance.lt(amount)) {
+                            this.errorMessage = this.$t('message.modal_error_weth_insufficient_balance')
+                            return
+                        }
+
+                        const allowance = await this.libZeroEx.allowance(asset.contractAddress, this.order.makerAddress)
                         if (allowance.lt(amount)) {
                             this.waitingApprovalMessage = this.$t('message.modal_makeOrder_message')
-                            await this.libZeroEx.approve(asset.contractAddress, asset.ownerAddress)
+                            await this.libZeroEx.approve(asset.contractAddress, this.order.makerAddress)
                         }
                     }
                 }
