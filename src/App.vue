@@ -5,43 +5,56 @@
       dense
       dark
       color="cyan lighten-1"
+      class="elevation-2"
     >
-      <v-toolbar-title @click="$router.push('/')">
+      <v-toolbar-title @click="$router.push('/').catch(err => {})">
         <b>{{ $t("message.serviceName") }}</b>
       </v-toolbar-title>
       <v-spacer />
-      <div
-        class="mr-2"
-        @click="$router.push('/task')"
+      <v-btn
+        icon
+        @click="$router.push('/task').catch(err => {})"
       >
-        <v-icon>mdi-check-outline</v-icon>
-      </div>
-      <div @click="$router.push('/history')">
-        <v-icon>mdi-dots-vertical</v-icon>
-      </div>
+        <v-icon>mdi-check</v-icon>
+      </v-btn>
+
+      <v-menu bottom left>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            dark
+            icon
+            v-on="on"
+          >
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item
+            @click="$router.push('/').catch(err => {})"
+          >
+            <v-list-item-title>{{ $t('message.tab_new') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item
+            @click="$router.push('/history').catch(err => {})"
+          >
+            <v-list-item-title>{{ $t('message.tab_history') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item
+            @click="$router.push('/task').catch(err => {})"
+          >
+            <v-list-item-title>{{ $t('message.tab_task') }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
     </v-app-bar>
-    <!--
-      <v-tabs
-        v-if="false"
-        background-color="transparent"
-        dark
-        grow
-      >
-        <v-tab
-          to="/"
-          class="subtitle-1 font-weight-medium"
-        >
-          {{ $t("message.tab_new") }}
-        </v-tab>
-        <v-tab
-          to="/task"
-          class="subtitle-1 font-weight-medium"
-        >
-          {{ $t("message.tab_task") }}
-        </v-tab>
-      </v-tabs> -->
+
+    <div class="mb-6" />
 
     <router-view />
+
+    <v-spacer />
 
     <v-divider />
 

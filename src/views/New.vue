@@ -2,12 +2,12 @@
   <v-container class="mt-7">
     <v-row
       justify="center"
-      class="ml-0"
+      class="ml-2 mr-2"
     >
       <v-col
         cols="12"
         sm="8"
-        md="4"
+        md="6"
       >
         <v-item-group>
           <v-card
@@ -15,7 +15,8 @@
             :key="asset.id"
             :loading="asset.loading"
             loader-height="5px"
-            class="elevation-4 mt-2 mb-0 pa-0 justify-center"
+            outlined
+            class="elevation-4 mb-0 pa-0 justify-center"
           >
             <v-toolbar
               v-if="asset.id === 0"
@@ -32,16 +33,9 @@
             <v-row
               v-if="!!asset.name"
               justify="center"
+              class="ml-1"
             >
-              <v-col
-                cols="2"
-                class="d-flex justify-center align-center pl-4"
-              >
-                <v-icon @click="removeSendingAsset(asset)">
-                  mdi-close
-                </v-icon>
-              </v-col>
-              <v-col cols="6">
+              <v-col cols="6" sm="7" md="7">
                 <v-card-title
                   v-if="!!asset.name"
                   class="subtitle-1 ma-0 pa-0"
@@ -55,28 +49,41 @@
                   {{ asset.contractName }} #{{ asset.tokenId }}
                 </v-card-subtitle>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="4" sm="3" md="3" align="center">
                 <v-img
                   v-if="!!asset.image"
                   class="align-center justify-center pa-0 ma-0"
                   :src="asset.image"
-                  height="100px"
+                  height="100%"
                   max-width="100px"
                 />
               </v-col>
+              <v-col
+                cols="2" sm="2" md="2"
+                class="d-flex justify-center align-center pr-5"
+              >
+                <v-icon @click="removeSendingAsset(asset)">
+                  mdi-close
+                </v-icon>
+              </v-col>
             </v-row>
 
-            <v-text-field
+            <v-card-text
               v-if="!asset.image"
-              ref="asset.url"
-              v-model="asset.url"
-              :label="$t('message.card_input_label_url')"
-              :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id)]"
-              :error-messages="asset.errorMessages"
-              name="url"
-              type="text"
-              class="mx-3"
-            />
+            >
+              <v-form>
+                <v-text-field
+                  ref="asset.url"
+                  v-model="asset.url"
+                  :label="$t('message.card_input_label_url')"
+                  :rules="[loadAssetInfoFromUrl('sendingAssets', asset.id)]"
+                  :error-messages="asset.errorMessages"
+                  name="url"
+                  type="text"
+                  class="ma-0 pa-0"
+                />
+              </v-form>
+            </v-card-text>
 
             <v-fab-transition
               v-if="!!asset.image && asset.id === sendingAssets.length - 1"
@@ -110,17 +117,21 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-text-field
-              ref="sendingCurrencies[0].amount"
-              v-model="sendingCurrencies[0].amount"
-              :rules="[isNumber]"
-              suffix="WETH"
-              :error-messages="sendingCurrencies[0].errorMessages"
-              placeholder="0"
-              name="amount"
-              type="text"
-              class="subtitle-1 mx-3"
-            />
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  ref="sendingCurrencies[0].amount"
+                  v-model="sendingCurrencies[0].amount"
+                  :rules="[isNumber]"
+                  suffix="WETH"
+                  :error-messages="sendingCurrencies[0].errorMessages"
+                  placeholder="0"
+                  name="amount"
+                  type="text"
+                  class="subtitle-1 ma-0 pa-0"
+                />
+              </v-form>
+            </v-card-text>
           </v-card>
         </v-item-group>
 
@@ -129,9 +140,10 @@
           justify="center"
           class="mt-6 mb-5"
         >
-          <v-icon size="50">
-mdi-arrow-up-down-bold
-</v-icon>
+          <img
+            src="@/assets/swap-allow.png"
+            height="48px"
+          >
         </div>
 
         <v-item-group>
@@ -157,16 +169,9 @@ mdi-arrow-up-down-bold
             <v-row
               v-if="!!asset.name"
               justify="center"
+              class="ml-1"
             >
-              <v-col
-                cols="2"
-                class="d-flex justify-center align-center pl-4"
-              >
-                <v-icon @click="removeSendingAsset(asset)">
-                  mdi-close
-                </v-icon>
-              </v-col>
-              <v-col cols="6">
+              <v-col cols="6" sm="7" md="7">
                 <v-card-title
                   v-if="!!asset.name"
                   class="subtitle-1 ma-0 pa-0"
@@ -180,32 +185,46 @@ mdi-arrow-up-down-bold
                   {{ asset.contractName }} #{{ asset.tokenId }}
                 </v-card-subtitle>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="4" sm="3" md="3" align="center">
                 <v-img
                   v-if="!!asset.image"
                   class="align-center justify-center pa-0 ma-0"
                   :src="asset.image"
-                  height="100px"
+                  height="100%"
                   max-width="100px"
                 />
               </v-col>
+              <v-col
+                cols="2" sm="2" md="2"
+                class="d-flex justify-center align-center pr-5"
+              >
+                <v-icon @click="removeReceivingAsset(asset)">
+                  mdi-close
+                </v-icon>
+              </v-col>
             </v-row>
-            <v-text-field
+
+            <v-card-text
               v-if="!asset.image"
-              ref="asset.url"
-              v-model="asset.url"
-              class="mx-3"
-              :label="$t('message.card_input_label_url')"
-              :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id)]"
-              :error-messages="asset.errorMessages"
-              name="url"
-              type="text"
-            />
+            >
+              <v-form>
+                <v-text-field
+                  ref="asset.url"
+                  v-model="asset.url"
+                  :label="$t('message.card_input_label_url')"
+                  :rules="[loadAssetInfoFromUrl('receivingAssets', asset.id)]"
+                  :error-messages="asset.errorMessages"
+                  name="url"
+                  type="text"
+                />
+              </v-form>
+            </v-card-text>
+
             <v-fab-transition
               v-if="!!asset.image && asset.id === receivingAssets.length - 1"
             >
               <v-btn
-                color="cyan lighten-2"
+                color="orange lighten-2"
                 dark
                 small
                 absolute
@@ -233,17 +252,21 @@ mdi-arrow-up-down-bold
               </v-toolbar-title>
             </v-toolbar>
 
-            <v-text-field
-              ref="receivingCurrencies[0].amount"
-              v-model="receivingCurrencies[0].amount"
-              :rules="[isNumber]"
-              suffix="WETH"
-              :error-messages="receivingCurrencies[0].errorMessages"
-              placeholder="0"
-              name="amount"
-              type="text"
-              class="subtitle-1 mx-3"
-            />
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  ref="receivingCurrencies[0].amount"
+                  v-model="receivingCurrencies[0].amount"
+                  :rules="[isNumber]"
+                  suffix="WETH"
+                  :error-messages="receivingCurrencies[0].errorMessages"
+                  placeholder="0"
+                  name="amount"
+                  type="text"
+                  class="subtitle-1 ma-0"
+                />
+              </v-form>
+            </v-card-text>
           </v-card>
         </v-item-group>
       </v-col>
@@ -592,14 +615,23 @@ export default {
         }
     },
     methods: {
-        removeSendingAsset(dic) {
-          this.sendingAssets = this.sendingAssets.filter(elem=>
-              !(elem.id === dic.id && elem.url===dic.url && elem.image===dic.image)          )
-          if(this.sendingAssets.length<1){
-           this.sendingAssets=[
-            { id: 0, url: '', image: null }
-        ]
-          }
+        removeSendingAsset(asset) {
+            this.sendingAssets = this.sendingAssets.filter(elem =>
+                !(elem.id === asset.id && elem.url === asset.url && elem.image === asset.image))
+            if (this.sendingAssets.length < 1) {
+                this.sendingAssets = [
+                    { id: 0, url: '', image: null }
+                ]
+            }
+        },
+        removeReceivingAsset(asset) {
+            this.receivingAssets = this.receivingAssets.filter(elem =>
+                !(elem.id === asset.id && elem.url === asset.url && elem.image === asset.image))
+            if (this.receivingAssets.length < 1) {
+                this.receivingAssets = [
+                    { id: 0, url: '', image: null }
+                ]
+            }
         },
         async copyToClipboard(text) {
             await navigator.clipboard.writeText(text)
@@ -837,8 +869,8 @@ export default {
                 const nowDate = new Date().getTime()
                 const docId = await firestore.addOrder({
                   order: normalizedOrder,
-                  sellerAddress: this.order.makerAddress,
-                  buyerAddress: this.order.takerAddress,
+                  makerAddress: this.order.makerAddress,
+                  takerAddress: this.order.takerAddress,
                   makerAssets: this.orderForDisplay.makerAssets,
                   takerAssets: this.orderForDisplay.takerAssets,
                   createdAt: nowDate,

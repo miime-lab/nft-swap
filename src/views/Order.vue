@@ -1,9 +1,14 @@
 <template>
   <v-container class="mt-7">
-    <v-row>
+    <v-row
+      align="start"
+      justify="center"
+      class="ml-2 mr-2"
+    >
       <v-col
         cols="12"
-        sm="8"
+        sm="10"
+        md="8"
       >
         <v-dialog
           v-model="dialog"
@@ -89,7 +94,7 @@
         <!-- オーダー詳細 -->
         <v-card
           v-if="!!order.makerAddress"
-          class="elevation-20 mb-0"
+          class="elevation-4 mb-0 pl-2"
         >
           <v-row
             class="align-center justify-space-between"
@@ -285,6 +290,19 @@ export default {
         completedMessage: null
     }),
     created: async function() {
+        const getBrowserLanguage = () => {
+          try {
+            return navigator.browserLanguage || navigator.language || navigator.userLanguage
+          } catch(e) {
+            console.log(e)
+            return undefined;
+          }
+        }
+        const locale = getBrowserLanguage()
+        if (locale) {
+            moment.locale(locale)
+        }
+
         this.orderId = this.$route.params.id
         const orderData = await firestore.getOrder(this.orderId)
         this.makerAssets = orderData.makerAssets
@@ -299,10 +317,10 @@ export default {
         }
 
         if (window.ethereum) {
-          await window.ethereum.enable()
-          this.provider = window.ethereum
+            await window.ethereum.enable()
+            this.provider = window.ethereum
         } else if (window.web3) {
-          this.provider = window.web3.currentProvider
+            this.provider = window.web3.currentProvider
         }
         const web3 = new Web3(this.provider)
         this.myAddress = (await web3.eth.getAccounts())[0] || ''
@@ -333,9 +351,10 @@ export default {
             }
             const status = orderStatusLabels[orderInfo.orderStatus]
             if (this.orderForDisplay.status !== status) {
-              this.orderForDisplay.status = status
-              await firestore.updateOrder(this.orderId, { status })
+              const updatedAt = new Date().getTime()
+              await firestore.updateOrder(this.orderId, { status, updatedAt })
             }
+            this.orderForDisplay.status = status
         },
         getAssetFromCache(contractAddress, tokenId) {
             return this.makerAssets.find(asset => asset.contractAddress === contractAddress && asset.tokenId === tokenId) ||

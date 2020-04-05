@@ -14,7 +14,7 @@
           justify="center"
           class="title mb-2 grey--text"
         >
-          {{ $t('message.tab_task') }}
+          {{ $t('message.tab_history') }}
         </v-toolbar-title>
 
         <v-card
@@ -41,7 +41,7 @@ import firestore from '../plugins/firestore'
 import moment from 'moment'
 import Web3 from 'web3'
 export default {
-    name: 'Task',
+    name: 'History',
     data: () => ({
         errorMessages: '',
         myAddress: null,
@@ -75,7 +75,7 @@ export default {
         this.myAddress = this.myAddress.toLowerCase()
         console.log('myAddress', this.myAddress)
 
-        this.orders = await firestore.getOrderByTakerAddress(this.myAddress, 50, undefined)
+        this.orders = await firestore.getOrderByMakerAddress(this.myAddress, 50, undefined)
         this.orders = this.orders.dataArray
         console.log(this.orders)
     },
