@@ -6,7 +6,14 @@
       dark
       color="cyan lighten-1"
     >
-      <v-toolbar-title><b>{{ $t("message.serviceName") }}</b></v-toolbar-title>
+      <v-toolbar-title @click="$router.push('/')">
+        <b>{{ $t("message.serviceName") }}</b>
+      </v-toolbar-title>
+      <v-spacer />
+      <v-icon>mdi-task</v-icon>
+      <div @click="$router.push('/task')">
+        {{ $t("message.tab_task") }}
+      </div>
     </v-app-bar>
     <!--
       <v-tabs
