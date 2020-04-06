@@ -7,11 +7,27 @@
       color="cyan lighten-1"
       class="elevation-2"
     >
-      <v-toolbar-title @click="$router.push('/').catch(err => {})">
+      <v-icon
+        v-if="isOrder"
+        class="mr-4"
+        @click="goBack()"
+      >
+        mdi-arrow-left
+      </v-icon>
+      <v-toolbar-title
+        v-if="isNewTaskHistory"
+        @click="$router.push('/').catch(err => {})"
+      >
         <b>{{ $t("message.serviceName") }}</b>
+      </v-toolbar-title>
+      <v-toolbar-title
+        v-if="isOrder"
+      >
+        <b>{{ $t("message.tab_order") }}</b>
       </v-toolbar-title>
       <v-spacer />
       <v-btn
+        v-if="isNewTaskHistory"
         icon
         @click="$router.push('/task').catch(err => {})"
       >
@@ -19,6 +35,7 @@
       </v-btn>
 
       <v-menu
+        v-if="isNewTaskHistory"
         bottom
         left
       >
@@ -118,8 +135,27 @@ import Vue from 'vue'
 import Web3 from 'web3'
 export default Vue.extend({
     name: 'App',
+    computed:{
+        isNewTaskHistory: function(){
+            return this.$route.name === "New" |
+        this.$route.name === "Task" |
+        this.$route.name === "History"
+        },
+        isOrder:function(){
+            return this.$route.name=== "Order"
+        }
+    },
     created:async function (){
-
+    },
+    methods:{
+        goBack: function() {
+            const lastPage = window.localStorage.getItem("from");
+            if (lastPage === "null" || lastPage === "Order") {
+                this.$router.push({ name: "New" }).catch(() => {});
+            } else {
+                this.$router.go(-1);
+            }
+        },
     }
 })
 </script>
