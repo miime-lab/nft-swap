@@ -53,7 +53,10 @@
 
             <v-card-text>{{ waitingApprovalMessage }}</v-card-text>
 
-            <v-card-text align="center" justify="center">
+            <v-card-text
+              align="center"
+              justify="center"
+            >
               <v-progress-circular
                 indeterminate
                 size="16"
@@ -75,7 +78,10 @@
 
             <v-card-text>{{ waitingSendMessage }}</v-card-text>
 
-            <v-card-text align="center" justify="center">
+            <v-card-text
+              align="center"
+              justify="center"
+            >
               <v-progress-circular
                 indeterminate
                 size="16"
@@ -522,9 +528,9 @@ export default {
                 this.waitingApprovalMessage = null
 
                 const orderForFill = this.convertOrder(this.order)
-                const txHash = await this.libZeroEx.fillOrder(orderForFill, orderForFill.takerAddress, orderForFill.takerAssetAmount, this.gasPrice)
+                const txHashObj = await this.libZeroEx.fillOrder(orderForFill, orderForFill.takerAddress, orderForFill.takerAssetAmount, this.gasPrice)
                 this.waitingApprovalMessage = null
-
+                console.log(txHashObj)
                 this.completedMessage = this.$t('message.order_page.modal_completed_message')
 
             } catch (e) {

@@ -288,7 +288,7 @@ export default class libZeroEx {
         taker: string,
         takerAssetAmount: BigNumber,
         gasPrice?: string
-    ): Promise<string> {
+    ): Promise<any> {
         const gas = (await this.contractWrappers.exchange
             .fillOrder(signedOrder, takerAssetAmount, signedOrder.signature)
             .estimateGasAsync({
@@ -303,11 +303,12 @@ export default class libZeroEx {
         console.log('gasPrice', gasPrice)
         const txHash = await this.contractWrappers.exchange
             .fillOrder(signedOrder, takerAssetAmount, signedOrder.signature)
-            .sendTransactionAsync({
+            .awaitTransactionSuccessAsync({
                 from: taker,
                 ...opts,
                 value: this.calculateProtocolFee([signedOrder], Number(gasPrice || TX_DEFAULTS.gasPrice))
-            });
+            })
+        console.log('txHash', txHash)
         return txHash;
     }
 
