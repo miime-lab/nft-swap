@@ -62,6 +62,7 @@ const messages = {
             error_unsupported_token_standard: "Sorry, this token standard is not supported",
             error_not_my_token: "You don't own this token.",
             error_already_input_asset: "The asset is already input.",
+            error_same_owner_assets: "Assets with the same owner cannot be swap",
             order_page: {
                 order_status: {
                     INVALID: "Invalid",
@@ -144,6 +145,7 @@ const messages = {
             error_not_my_token: "あなたはこのトークンの所有者ではありません。",
             error_unsupported_token_standard: "申し訳ありませんがこのトークン規格には対応していません",
             error_already_input_asset: "このアイテムはすでに入力済みです",
+            error_same_owner_assets: "同じ所有者のアイテムを追加しようとしています",
             order_page: {
                 order_status: {
                     INVALID: "無効",

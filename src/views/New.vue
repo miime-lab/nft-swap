@@ -697,11 +697,15 @@ export default {
                 asset.loading = 'cyan lighten-2'
                 opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
                     console.log('assetInfo', assetInfo)
-                    if(side==="maker" && assetInfo.owner.address!==this.myAddress){
+                    if (side === "maker" && assetInfo.owner.address !== this.myAddress) {
                         this.dialog = true
                         this.errorMessage = this.$t('message.error_not_my_token')
                         asset.url = ''
-                    }else if (assetInfo.asset_contract.schema_name !== 'ERC721') {
+                    } else if (this.isSameOwnerAsset(dataName, assetInfo.owner.address)) {
+                        this.dialog = true
+                        this.errorMessage = this.$t('message.error_same_owner_assets')
+                        asset.url = ''
+                    } else if (assetInfo.asset_contract.schema_name !== 'ERC721') {
                         this.dialog = true
                         this.errorMessage = this.$t('message.error_unsupported_token_standard')
                         asset.url = ''
@@ -730,6 +734,13 @@ export default {
             } else {
                 return this.sendingAssets.find(asset => asset.url === url) ||
                     this.receivingAssets.find(asset => asset.url === url && asset.id !== selfId)
+            }
+        },
+        isSameOwnerAsset(dataName, ownerAddress) {
+            if (dataName === 'sendingAssets') {
+                return this.receivingAssets.find(asset => asset.ownerAddress === ownerAddress)
+            } else {
+                return this.sendingAssets.find(asset => asset.ownerAddress === ownerAddress)
             }
         },
         addAsset(dataName) {
