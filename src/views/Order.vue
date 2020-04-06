@@ -490,8 +490,6 @@ export default {
             return orderForDisplay
         },
         async fillOrder () {
-            this.dialog = true
-            this.completedMessage = 'test'
             try {
                 console.log('fillOrder')
                 this.errorMessage = null
