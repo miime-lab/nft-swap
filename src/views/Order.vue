@@ -287,7 +287,7 @@
           <v-card-actions>
             <v-spacer />
             <v-btn
-              :disabled="!isTaker"
+              :disabled="!(isTaker && (!orderForDisplay.status || orderForDisplay.status === 'FILLABLE'))"
               color="green darken-1"
               text
               @click="fillOrder"
@@ -490,6 +490,8 @@ export default {
             return orderForDisplay
         },
         async fillOrder () {
+            this.dialog = true
+            this.completedMessage = 'test'
             try {
                 console.log('fillOrder')
                 this.errorMessage = null
@@ -529,9 +531,15 @@ export default {
 
                 const orderForFill = this.convertOrder(this.order)
                 const txHashObj = await this.libZeroEx.fillOrder(orderForFill, orderForFill.takerAddress, orderForFill.takerAssetAmount, this.gasPrice)
-                this.waitingApprovalMessage = null
                 console.log(txHashObj)
+
                 this.completedMessage = this.$t('message.order_page.modal_completed_message')
+                this.waitingSendMessage = null
+
+                const status = 'FULLY_FILLED'
+                const updatedAt = new Date().getTime()
+                await firestore.updateOrder(this.orderId, { status, updatedAt })
+                this.orderForDisplay.status = status
 
             } catch (e) {
                 console.log(e)
@@ -568,7 +576,6 @@ export default {
         async fillOrderCompleted() {
             this.dialog = false
             this.resetModal()
-            await this.checkAndUpdateOrderStatus()
         }
     }
 }
