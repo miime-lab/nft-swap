@@ -18,8 +18,8 @@
         </v-toolbar-title>
 
         <v-card
-          outlined
           v-if="!orders || orders.length === 0"
+          outlined
           class="mb-2 pa-0 justify-center"
         >
           <v-card-title class="subtitle-1">
@@ -27,10 +27,10 @@
           </v-card-title>
         </v-card>
         <OrderCard
-          v-else
           v-for="order of orders"
           :key="order.id"
           :order="order"
+          v-else
         />
       </v-col>
     </v-row>

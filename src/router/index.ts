@@ -45,8 +45,10 @@ const router = new VueRouter({
     routes
 })
 router.beforeEach((to, from, next) => {
-    if (from.name!=null) {
+    if (from.name != null) {
         window.localStorage.setItem("from", from.name);
+        next()
+    } else {
         next()
     }
 })
