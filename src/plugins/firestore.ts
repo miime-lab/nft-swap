@@ -19,6 +19,7 @@ class Firestore {
         var query = this.db
             .collection("orders")
             .where("makerAddress", '==', makerAddress)
+            .where("deleted", '==', false)
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
@@ -26,6 +27,7 @@ class Firestore {
         var query = this.db
             .collection("orders")
             .where("takerAddress", '==', takerAddress)
+            .where("deleted", '==', false)
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
@@ -77,6 +79,13 @@ class Firestore {
             .collection("orders")
             .doc(docId)
             .delete()
+    }
+
+    async logicalDeleteOrder(docId: String) {
+        await this.db
+            .collection("orders")
+            .doc(docId)
+            .update({ deleted: true })
     }
 }
 

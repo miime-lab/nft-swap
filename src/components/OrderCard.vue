@@ -1,15 +1,5 @@
 <template>
   <v-card
-    outlined
-    v-if="!order || !order.id"
-    class="mb-2 pa-0 justify-center"
-  >
-    <v-card-title class="subtitle-1">
-      {{ $t('message.headline_no_order') }}
-    </v-card-title>
-  </v-card>
-  <v-card
-    v-else
     :key="order.id"
     class="elevation-4 mb-2 pa-0 justify-center"
     @click="$router.push(`/order/${order.id}`)"
