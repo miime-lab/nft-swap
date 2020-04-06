@@ -624,7 +624,7 @@ export default {
             await firestore.logicalDeleteOrder(this.orderId)
             this.dialog = false
             this.resetModal()
-            this.$router.push('/') // TODO: 前のページが同じドメインであれば戻るようにしたい
+            this.$router.push('/history')
         }
     }
 }
