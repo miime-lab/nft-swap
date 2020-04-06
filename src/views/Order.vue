@@ -114,6 +114,37 @@
               </v-btn>
             </v-card-actions>
           </v-card>
+
+          <!-- オーダー削除確認 モーダル -->
+          <v-card
+            v-else-if="deleteConfirmationMessage"
+          >
+            <v-card-title
+              class="headline"
+            >
+              {{ $t('message.order_page.modal_delete_confirmation_title') }}
+            </v-card-title>
+
+            <v-card-text>{{ deleteConfirmationMessage }}</v-card-text>
+
+            <v-card-actions>
+              <v-spacer />
+              <v-btn
+                color="green darken-1"
+                text
+                @click="dialog = false"
+              >
+                {{ $t('message.order_page.modal_delete_confirmation_cancel') }}
+              </v-btn>
+              <v-btn
+                color="green darken-1"
+                text
+                @click="deleteOrder"
+              >
+                {{ $t('message.order_page.modal_delete_confirmation_delete') }}
+              </v-btn>
+            </v-card-actions>
+          </v-card>
         </v-dialog>
 
         <!-- オーダー詳細 -->
@@ -287,6 +318,14 @@
           <v-card-actions>
             <v-spacer />
             <v-btn
+              v-if="isMaker && orderForDisplay.status !== 'FULLY_FILLED'"
+              color="red darken-1"
+              text
+              @click="deleteOrderConfirmation"
+            >
+              {{ $t("message.button_deleteOrder") }}
+            </v-btn>
+            <v-btn
               :disabled="!(isTaker && (!orderForDisplay.status || orderForDisplay.status === 'FILLABLE'))"
               color="green darken-1"
               text
@@ -330,7 +369,8 @@ export default {
         dialog: false,
         waitingApprovalMessage: null,
         waitingSendMessage: null,
-        completedMessage: null
+        completedMessage: null,
+        deleteConfirmationMessage: null
     }),
     created: async function() {
         const getBrowserLanguage = () => {
@@ -490,8 +530,6 @@ export default {
             return orderForDisplay
         },
         async fillOrder () {
-            this.dialog = true
-            this.completedMessage = 'test'
             try {
                 console.log('fillOrder')
                 this.errorMessage = null
@@ -572,10 +610,21 @@ export default {
             this.waitingApprovalMessage = null
             this.waitingSigningMessage = null
             this.completedMessage = null
+            this.deleteConfirmationMessage = null
         },
         async fillOrderCompleted() {
             this.dialog = false
             this.resetModal()
+        },
+        async deleteOrderConfirmation() {
+            this.deleteConfirmationMessage = this.$t('message.order_page.modal_delete_confirmation_message')
+            this.dialog = true
+        },
+        async deleteOrder() {
+            await firestore.logicalDeleteOrder(this.orderId)
+            this.dialog = false
+            this.resetModal()
+            this.$router.push('/') // TODO: 前のページが同じドメインであれば戻るようにしたい
         }
     }
 }

@@ -16,7 +16,18 @@
         >
           {{ $t('message.tab_task') }}
         </v-toolbar-title>
+
+        <v-card
+          outlined
+          v-if="!orders || orders.length === 0"
+          class="mb-2 pa-0 justify-center"
+        >
+          <v-card-title class="subtitle-1">
+            {{ $t('message.headline_no_order') }}
+          </v-card-title>
+        </v-card>
         <OrderCard
+          v-else
           v-for="order of orders"
           :key="order.id"
           :order="order"
@@ -40,7 +51,6 @@ export default {
         errorMessages: '',
         myAddress: null,
         orders: [
-            {}
         ]
     }),
     created: async function() {
@@ -69,8 +79,7 @@ export default {
         this.myAddress = this.myAddress.toLowerCase()
         console.log('myAddress', this.myAddress)
 
-        this.orders = await firestore.getOrderByTakerAddress(this.myAddress, 50, undefined)
-        this.orders = this.orders.dataArray
+        this.orders = (await firestore.getOrderByTakerAddress(this.myAddress, 50, undefined)).dataArray
         console.log(this.orders)
     },
 }

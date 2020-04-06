@@ -21,6 +21,7 @@ const messages = {
             card_input_label_url: "Input OpenSea or miime URL",
             button_makeOrder: "Create order",
             button_fillOrder: "Fill Order",
+            button_deleteOrder: "Delete",
             button_reset: "Reset",
             headline_order_id: "Order ID",
             headline_updated_at: "Updated At",
@@ -80,6 +81,10 @@ const messages = {
                 modal_waiting_send_tx: "Waiting for order filling transaction to confirmed.",
                 modal_completed_title: "Order Filling Completed",
                 modal_completed_message: "Congratulations. Order filling is completed.",
+                modal_delete_confirmation_title: "Order Delete Confirmation",
+                modal_delete_confirmation_message: "Are you sure you want to delete the order?",
+                modal_delete_confirmation_delete: "Delete",
+                modal_delete_confirmation_cancel: "Cancel",    
                 button_url_copy_title: "Copy URL",
                 url_copy_done: "URL copied."
             }
@@ -98,6 +103,7 @@ const messages = {
             card_input_label_url: "OpenSea または miime の URL",
             button_makeOrder: "オーダー作成",
             button_fillOrder: "取引を実行",
+            button_deleteOrder: "削除",
             button_reset: "リセット",
             headline_order_id: "オーダーID",
             headline_updated_at: "更新日",
@@ -156,6 +162,10 @@ const messages = {
                 modal_waiting_send_tx: "オーダー実行のトランザクションが完了するのを待っています。",
                 modal_completed_title: "オーダー実行完了",
                 modal_completed_message: "おめでとうございます。オーダーの実行が完了しました。",
+                modal_delete_confirmation_title: "オーダー削除確認",
+                modal_delete_confirmation_message: "オーダーを削除します。よろしいですか？",
+                modal_delete_confirmation_delete: "削除",
+                modal_delete_confirmation_cancel: "キャンセル",    
                 button_url_copy_title: "URL をコピー",
                 url_copy_done: "コピーしました。"
             }

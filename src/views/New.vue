@@ -911,7 +911,8 @@ export default {
                   takerAssets: this.orderForDisplay.takerAssets,
                   createdAt: nowDate,
                   updatedAt: nowDate,
-                  status: 'FILLABLE'
+                  status: 'FILLABLE',
+                  deleted: false
                 })
                 console.log('docId', docId)
 
