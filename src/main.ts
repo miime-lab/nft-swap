@@ -24,6 +24,7 @@ const messages = {
             button_fillOrder: "Fill Order",
             button_deleteOrder: "Delete",
             button_reset: "Reset",
+            button_load_more: "Load More",
             headline_order_id: "Order ID",
             headline_updated_at: "Updated At",
             headline_status: "Status",
