@@ -33,7 +33,7 @@ class Firestore {
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
-    async queryWithPagination(query: any, docSnapshot: any|undefined, perPage: number, page: number = 1){
+    async queryWithPagination(query: any, docSnapshot: any|undefined, perPage: number){
         interface output {
             docSnapshot: any,
             dataArray: object[]
