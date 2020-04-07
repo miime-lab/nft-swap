@@ -694,9 +694,10 @@ export default {
                     return false
                 }
                 asset.errorMessages = ''
-                asset.loading = 'cyan lighten-2'
+                asset.loading = 'grey darken-3'
                 opensea.getAssetInfo(contractAddress, tokenId).then(assetInfo => {
                     console.log('assetInfo', assetInfo)
+                    asset.loading = false
                     if (side === "maker" && assetInfo.owner.address !== this.myAddress) {
                         this.dialog = true
                         this.errorMessage = this.$t('message.error_not_my_token')
@@ -718,11 +719,11 @@ export default {
                         asset.contractAddress = assetInfo.asset_contract.address
                         asset.tokenId = assetInfo.token_id
                         asset.tokenStandard = assetInfo.asset_contract.schema_name // 'ERC721' など
-                        asset.loading = false
                     }
                 })
             } catch (e) {
                 console.log(e)
+                asset.loading = false
                 asset.errorMessages = this.$t('message.error_invalid_asset_url')
             }
             return true
@@ -922,8 +923,7 @@ export default {
                   takerAssets: this.orderForDisplay.takerAssets,
                   createdAt: nowDate,
                   updatedAt: nowDate,
-                  status: 'FILLABLE',
-                  deleted: false
+                  status: 'FILLABLE'
                 })
                 console.log('docId', docId)
 
