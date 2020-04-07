@@ -23,15 +23,30 @@
           class="mb-2 pa-0 justify-center"
         >
           <v-card-title class="subtitle-1">
-            {{ $t('message.headline_no_order') }}
+            {{ $t('message.headline_no_task') }}
           </v-card-title>
         </v-card>
         <OrderCard
           v-for="order of orders"
+          v-else
           :key="order.id"
           :order="order"
-          v-else
         />
+      </v-col>
+
+      <v-col
+        cols="12"
+        align="center"
+        class="pa-0"
+      >
+        <v-btn
+          v-if="lastDocSnapshot && lastDocSnapshot.docs.length === 50"
+          rounded
+          class="grey--text text--darken-2"
+          @click="loadMore"
+        >
+          {{ $t("message.button_load_more") }}
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -51,7 +66,8 @@ export default {
         errorMessages: '',
         myAddress: null,
         orders: [
-        ]
+        ],
+        lastDocSnapshot: null
     }),
     created: async function() {
         const getBrowserLanguage = () => {
@@ -79,8 +95,17 @@ export default {
         this.myAddress = this.myAddress.toLowerCase()
         console.log('myAddress', this.myAddress)
 
-        this.orders = (await firestore.getOrderByTakerAddress(this.myAddress, 50, undefined)).dataArray
+        const result = await firestore.getOrderByTakerAddress(this.myAddress, 50, undefined)
+        this.orders = result.dataArray
+        this.lastDocSnapshot = result.docSnapshot
         console.log(this.orders)
     },
+    methods: {
+        async loadMore() {
+            const result = await firestore.getOrderByTakerAddress(this.myAddress, 50, this.lastDocSnapshot)
+            this.orders = this.orders.concat(result.dataArray)
+            this.lastDocSnapshot = result.dataArray.length > 0 ? result.docSnapshot : null
+        }
+    }
 }
 </script>

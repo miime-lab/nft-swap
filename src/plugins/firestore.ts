@@ -20,6 +20,7 @@ class Firestore {
             .collection("orders")
             .where("makerAddress", '==', makerAddress)
             .where("deleted", '==', false)
+            .orderBy("updatedAt", "desc")
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
@@ -28,10 +29,11 @@ class Firestore {
             .collection("orders")
             .where("takerAddress", '==', takerAddress)
             .where("deleted", '==', false)
+            .orderBy("updatedAt", "desc")
         return this.queryWithPagination(query, docSnapshot,perPage)
     }
 
-    async queryWithPagination(query:any, docSnapshot:any|undefined, perPage:number){
+    async queryWithPagination(query: any, docSnapshot: any|undefined, perPage: number, page: number = 1){
         interface output {
             docSnapshot: any,
             dataArray: object[]
@@ -62,7 +64,7 @@ class Firestore {
     async addOrder(dic: object): Promise<string> {
         const res = await this.db
             .collection("orders")
-            .add(dic)
+            .add({ ...dic, deleted: false })
             .then((ref: { id: string; }) => { return ref.id })
         return res
     }
