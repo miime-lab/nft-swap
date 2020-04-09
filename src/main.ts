@@ -182,7 +182,7 @@ const messages = {
 }
 
 const i18n = new VueI18n({
-    locale: "ja",
+    locale: (navigator && navigator.language && navigator.language.split('-')[0] === 'ja') ? 'ja' : 'en',
     messages
 });
 
