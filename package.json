@@ -28,7 +28,7 @@
     "express": "^4.17.1",
     "http": "^0.0.0",
     "jest": "^25.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "ora": "^3.4.0",
     "request-promise-native": "^1.0.8",
     "run-s": "^0.0.0",
